@@ -1,0 +1,4 @@
+# Preserve final release source bytes, including original line endings.
+* -text
+*.zip binary
+*.png binary

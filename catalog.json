@@ -1,0 +1,36 @@
+{
+  "updated": "2026-11-08",
+  "tested_blender": "5.2.1 LTS (Windows)",
+  "plugins": [
+    {
+      "id": "jc-blender-agent",
+      "name": "JC Blender Agent",
+      "version": "0.1.5",
+      "archive": "JC-Blender-Agent-0.1.5.zip",
+      "sha256": "e684c59df0cbef547c1eb8961540794404b094ae62d75d46b4945f8e013b17c5",
+      "package": "packages/JC-Blender-Agent-0.1.5.zip",
+      "source": "plugins/jc-blender-agent",
+      "bytes": 291011
+    },
+    {
+      "id": "jc-history",
+      "name": "JC 历史记录",
+      "version": "1.0.0",
+      "archive": "JC_History_1.0.0_Blender52.zip",
+      "sha256": "3b425af5c1c9bbdc4dd06eaca509c3aa61ce2ad0813c3fa97dbb0c32b52e7443",
+      "package": "packages/JC_History_1.0.0_Blender52.zip",
+      "source": "plugins/jc-history",
+      "bytes": 19681
+    },
+    {
+      "id": "jc-view-navigator",
+      "name": "JC 六向视图导航",
+      "version": "1.1.0",
+      "archive": "JC-View-Navigator-1.1.0.zip",
+      "sha256": "43c938f1a5a5449e02f38e48cf66e45bce818ee3e5fd34ab89ee17ce010daafc",
+      "package": "packages/JC-View-Navigator-1.1.0.zip",
+      "source": "plugins/jc-view-navigator",
+      "bytes": 17860
+    }
+  ]
+}
