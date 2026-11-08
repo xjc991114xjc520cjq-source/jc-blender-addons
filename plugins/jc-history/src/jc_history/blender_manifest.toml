@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "jc_history"
-version = "1.0.0"
+version = "1.0.1"
 name = "JC History / JC 历史记录"
 tagline = "Keep real undo history and named scene snapshots in the sidebar"
 maintainer = "JC"

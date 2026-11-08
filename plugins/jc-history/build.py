@@ -5,12 +5,12 @@ import zipfile
 
 BASE = Path(__file__).resolve().parent
 SOURCE = BASE / "src" / "jc_history"
-OUTPUT = BASE / "dist" / "JC_History_1.0.0_Blender52.zip"
+OUTPUT = BASE / "dist" / "JC_History_1.0.1_Blender52.zip"
 OUTPUT.parent.mkdir(exist_ok=True)
 with zipfile.ZipFile(OUTPUT, "w", compression=zipfile.ZIP_DEFLATED) as archive:
     for path in sorted(SOURCE.iterdir()):
         if path.is_file() and path.suffix in {".py", ".toml", ".txt"}:
-            info = zipfile.ZipInfo(path.name, date_time=(2026, 11, 7, 0, 0, 0))
+            info = zipfile.ZipInfo(path.name, date_time=(2026, 11, 8, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             archive.writestr(info, path.read_bytes())
 with zipfile.ZipFile(OUTPUT) as archive:

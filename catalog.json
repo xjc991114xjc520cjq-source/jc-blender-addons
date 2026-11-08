@@ -15,12 +15,12 @@
     {
       "id": "jc-history",
       "name": "JC 历史记录",
-      "version": "1.0.0",
-      "archive": "JC_History_1.0.0_Blender52.zip",
-      "sha256": "3b425af5c1c9bbdc4dd06eaca509c3aa61ce2ad0813c3fa97dbb0c32b52e7443",
-      "package": "packages/JC_History_1.0.0_Blender52.zip",
+      "version": "1.0.1",
+      "archive": "JC_History_1.0.1_Blender52.zip",
+      "sha256": "ff1630ca412f7eeee8d63bf7d65d5b5402901858acda079f570e5ac3191b6062",
+      "package": "packages/JC_History_1.0.1_Blender52.zip",
       "source": "plugins/jc-history",
-      "bytes": 19681
+      "bytes": 22136
     },
     {
       "id": "jc-view-navigator",

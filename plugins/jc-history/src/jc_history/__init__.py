@@ -11,11 +11,11 @@ from datetime import datetime
 
 import bpy
 from bpy.app.handlers import persistent
-from bpy.props import IntProperty, StringProperty
-from . import storage
+from bpy.props import BoolProperty, IntProperty, StringProperty
+from . import storage, selection
 
 bl_info = {
-    "name": "JC History / JC 历史记录", "author": "JC", "version": (1, 0, 0),
+    "name": "JC History / JC 历史记录", "author": "JC", "version": (1, 0, 1),
     "blender": (5, 2, 0), "location": "3D 视图 > N 侧栏 > JC历史",
     "description": "常驻真实撤销历史、命名场景快照与恢复前自动备份",
     "category": "Interface",
@@ -145,11 +145,15 @@ class JCH_Preferences(bpy.types.AddonPreferences):
         name="快照存放目录", subtype='DIR_PATH', default="",
         description="留空使用 Blender 配置目录；更换目录不会移动已有快照")
     snapshot_rows: IntProperty(name="面板显示的最近快照数", default=8, min=1, max=100)
+    ignore_unchanged_selection: BoolProperty(
+        name="忽略无变化的点击选择", default=True,
+        description="物体和网格编辑模式下，选择及活动元素均未变化的点击不增加历史；保留有效选择")
 
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "storage_root")
         layout.prop(self, "snapshot_rows")
+        layout.prop(self, "ignore_unchanged_selection")
         layout.label(text="快照为本机文件，不上传网络，也不会自动定时保存。")
         layout.label(text="修改存放目录后，原快照仍保留在旧目录。")
 
@@ -428,6 +432,7 @@ CLASSES = (JCH_Preferences, JCH_OT_snapshot_add, JCH_OT_snapshot_restore,
 def register():
     for cls in CLASSES:
         bpy.utils.register_class(cls)
+    selection.register()
     if on_load not in bpy.app.handlers.load_post:
         bpy.app.handlers.load_post.append(on_load)
     if not bpy.app.timers.is_registered(tick):
@@ -444,6 +449,7 @@ def unregister():
         bpy.app.timers.unregister(tick)
     if on_load in bpy.app.handlers.load_post:
         bpy.app.handlers.load_post.remove(on_load)
+    selection.unregister()
     for cls in reversed(CLASSES):
         bpy.utils.unregister_class(cls)
     invalidate()
