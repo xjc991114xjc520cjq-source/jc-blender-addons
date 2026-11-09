@@ -2,6 +2,13 @@
 
 Environment: Windows x64, Blender 5.2.1 LTS, build `9e2066aef7ef`.
 
+## 1.0.1 regression
+
+- Reproduced a Windows Unicode argument bug: the same valid C4D fixture converted from an ASCII path, but the 1.0.0 engine could not open it when placed under a Chinese directory/name. The CLI accepted narrow ANSI arguments while Assimp file IO expected UTF-8.
+- Replaced the Windows entry point with wide Unicode arguments converted to UTF-8. Verified C4D input and GLB output in Chinese directories. The automated engine regression uses Chinese, spaces and a non-BMP emoji in directory and output names.
+- Ten automated tests pass, including actual engine error-10 diagnostics and proof that an unreadable source is not retried through another export format.
+- Reproduced code 10 with the user's actual local C4D model, then converted and re-imported that same file successfully with 1.0.1, including a test using the installed ZIP in a Unicode installation/cache path. Verified the source SHA-256 was unchanged. The user model, its textures, paths and test logs are not included in this repository or the release. Unsupported/corrupt files can still fail with their actual reader error.
+
 ## Completed
 
 - Independent conversion followed by actual Blender re-import: 29 checks passed. Samples: MAX `RotatingCube.max`, Cineware SDK `cube.c4d`, 3DS `cube_with_diffuse_texture.3DS` (GLB/FBX/OBJ), Collada animated box, DXF `PinkEggFromLW.dxf`, LWO `boxuv.lwo`, 3MF `box.3mf`, and a generated OFF triangle. The SDK sample and external test models are not included in this repository or the install ZIP.

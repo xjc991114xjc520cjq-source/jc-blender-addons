@@ -118,3 +118,61 @@ index 7a15364..bcf2aee 100644
  
      BaseMaterial* const mat = ttag.GetMaterial();
      ai_assert(mat != nullptr);
+diff --git a/tools/assimp_cmd/Main.cpp b/tools/assimp_cmd/Main.cpp
+index 7e40119..172da88 100644
+--- a/tools/assimp_cmd/Main.cpp
++++ b/tools/assimp_cmd/Main.cpp
+@@ -47,6 +47,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <assimp/ProgressHandler.hpp>
+ #include <iostream>
++#include <string>
++#include <vector>
++#ifdef _WIN32
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#ifndef WIN32_LEAN_AND_MEAN
++#define WIN32_LEAN_AND_MEAN
++#endif
++#include <windows.h>
++#endif
+ 
+ class ConsoleProgressHandler : public ProgressHandler {
+ public:
+@@ -97,7 +108,34 @@ constexpr char AICMD_MSG_HELP[] =
+ 
+ // ------------------------------------------------------------------------------
+ // Application entry point
+-int main (int argc, char* argv[]) {
++// JC: Assimp file IO expects UTF-8. Narrow Windows argv uses the active
++// ANSI code page, which corrupts Chinese/Unicode paths before IO sees them.
++static int AssimpMain(int argc, char* argv[]);
++#ifdef _WIN32
++int wmain(int argc, wchar_t* argv[]) {
++    std::vector<std::string> utf8(static_cast<size_t>(argc));
++    std::vector<char*> arguments(static_cast<size_t>(argc) + 1, nullptr);
++    for (int i = 0; i < argc; ++i) {
++        const int size = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS,
++                argv[i], -1, nullptr, 0, nullptr, nullptr);
++        if (size <= 0) {
++            std::cerr << "Invalid Unicode command-line argument\n";
++            return AssimpCmdError::InvalidNumberOfArguments;
++        }
++        utf8[i].resize(static_cast<size_t>(size));
++        if (!WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, argv[i], -1,
++                &utf8[i][0], size, nullptr, nullptr)) {
++            return AssimpCmdError::InvalidNumberOfArguments;
++        }
++        arguments[i] = &utf8[i][0];
++    }
++    return AssimpMain(argc, arguments.data());
++}
++#else
++int main(int argc, char* argv[]) { return AssimpMain(argc, argv); }
++#endif
++
++static int AssimpMain(int argc, char* argv[]) {
+ 	if (argc <= 1)	{
+ 		printf("assimp: No command specified. Use \'assimp help\' for a detailed command list\n");
+ 		return AssimpCmdError::Success;

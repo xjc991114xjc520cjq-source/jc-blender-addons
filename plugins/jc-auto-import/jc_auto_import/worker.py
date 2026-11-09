@@ -111,7 +111,11 @@ def main(job_path):
             command = [core.engines()[backend], 'export', str(source), str(intermediate), '-fglb2', '-l']
             try:
                 core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
-            except RuntimeError:
+            except core.ConversionError as error:
+                # An unreadable input will remain unreadable with another output
+                # format. Preserve its real cause and avoid a redundant retry.
+                if error.returncode is None or error.returncode == 10:
+                    raise
                 # Some source skin/animation structures cannot pass through the
                 # Assimp GLB exporter. Recover static geometry through OBJ.
                 (work / 'bridge.glb').unlink(missing_ok=True)

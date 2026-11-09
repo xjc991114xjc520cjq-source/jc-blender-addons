@@ -11,7 +11,7 @@ from bpy.props import BoolProperty, CollectionProperty, EnumProperty, FloatPrope
 from bpy_extras.io_utils import poll_file_object_drop
 from . import core
 
-bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 0),
+bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 1),
            'blender': (4, 2, 0), 'location': 'File > Import / 3D View > Sidebar > JC',
            'description': 'Offline format conversion and import without Cinema 4D or 3ds Max',
            'category': 'Import-Export'}

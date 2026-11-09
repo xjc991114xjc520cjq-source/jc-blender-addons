@@ -9,7 +9,7 @@
 | JC Blender Agent | 0.1.5 | [下载 ZIP](packages/JC-Blender-Agent-0.1.5.zip) | [源码 / 说明](plugins/jc-blender-agent/) |
 | JC 历史记录 | 1.0.1 | [下载 ZIP](packages/JC_History_1.0.1_Blender52.zip) | [源码 / 说明](plugins/jc-history/) |
 | JC 六向视图导航 | 1.1.0 | [下载 ZIP](packages/JC-View-Navigator-1.1.0.zip) | [源码 / 说明](plugins/jc-view-navigator/) |
-| JC 自动转换导入 | 1.0.0 | [下载 ZIP](packages/JC-Auto-Import-1.0.0-Windows.zip) | [源码 / 说明](plugins/jc-auto-import/) |
+| JC 自动转换导入 | 1.0.1 | [下载 ZIP](packages/JC-Auto-Import-1.0.1-Windows.zip) | [源码 / 说明](plugins/jc-auto-import/) |
 
 - **自动转换导入**：无需安装 C4D / 3ds Max，内置独立转换组件；原生格式弹窗、GLB / FBX / OBJ 输出、后台转换与缓存。MAX / C4D 及其他格式的兼容限制和实测边界见插件说明。
 - **Agent**：Codex / Claude Code / API 接入 Blender 的 MCP 控制链，支持模型列表、附件路径引用、本机 API 配置保存，以及可开关、随插件携带的产品渲染经验库。Claude Code 的真实账号联调边界见插件说明。

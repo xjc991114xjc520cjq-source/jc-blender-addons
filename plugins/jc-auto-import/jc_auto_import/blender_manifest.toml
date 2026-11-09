@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 id = "jc_auto_import"
-version = "1.0.0"
+version = "1.0.1"
 name = "JC Auto Import"
 tagline = "Import models offline without the original application"
 maintainer = "JC"

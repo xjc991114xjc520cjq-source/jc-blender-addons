@@ -5,7 +5,7 @@ import json
 import os
 import subprocess
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 EXTERNAL_EXTENSIONS = ('.c4d', '.max', '.3ds', '.3d', '.dae', '.dxf', '.lwo', '.lws', '.lxo', '.ase', '.off', '.x', '.ac', '.ms3d', '.b3d', '.3mf', '.x3d', '.md2', '.md3', '.md5mesh', '.pmx', '.ifc', '.stp', '.step', '.wrl', '.vrml', '.skp', '.dwg', '.igs', '.iges', '.sat')
 NATIVE_EXTENSIONS = ('.fbx', '.obj', '.glb', '.gltf', '.stl', '.ply', '.usd', '.usda', '.usdc', '.usdz', '.abc')
 TARGETS = {'GLB': '.glb', 'FBX': '.fbx', 'OBJ': '.obj'}
@@ -108,12 +108,31 @@ def stop_process(process):
             process.kill()
 
 
+class ConversionError(RuntimeError):
+    def __init__(self, message, returncode=None):
+        super().__init__(message)
+        self.returncode = returncode
+
+
 def run_external(command, timeout, log_path, cwd=None):
+    log_path = Path(log_path)
+    offset = log_path.stat().st_size if log_path.is_file() else 0
     process = spawn(command, log_path, cwd=cwd)
     try:
         process.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         stop_process(process)
-        raise RuntimeError('转换引擎超时，请检查源文件或增加超时。') from None
+        raise ConversionError('转换引擎超时，请检查源文件或增加超时。') from None
     if process.returncode:
-        raise RuntimeError('转换引擎退出码 %s，详情见日志。' % process.returncode)
+        with log_path.open('rb') as stream:
+            stream.seek(max(offset, log_path.stat().st_size - 65536))
+            lines = stream.read().decode('utf-8', 'replace').splitlines()
+        errors = [line.strip() for line in lines if line.startswith(('ERROR:', 'Error,'))]
+        detail = errors[-1][:500] if errors else '引擎没有提供具体原因，请查看转换日志。'
+        if process.returncode == 10:
+            message = '无法读取源模型（代码 10）：' + detail
+        elif process.returncode == 11:
+            message = '无法写出转换结果（代码 11）：' + detail
+        else:
+            message = '转换引擎异常退出（代码 %s）：%s' % (process.returncode, detail)
+        raise ConversionError(message, process.returncode)
