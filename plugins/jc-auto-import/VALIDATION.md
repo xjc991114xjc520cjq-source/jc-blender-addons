@@ -2,6 +2,16 @@
 
 Environment: Windows x64, Blender 5.2.1 LTS, build `9e2066aef7ef`.
 
+## 1.0.2 fidelity regression
+
+- Reproduced the reported extra wheel with the user's local C4D scene. The source contained hidden alternative meshes; the previous reader ignored editor visibility. Corrected the reader rather than deleting objects by name or shape.
+- Audited related paths: inherited visibility, explicit child ON, layer view switches, hidden polygon selections, cache-versus-source traversal, source-reference siblings, and coordinate/normal orientation. Added layer and polygon filtering plus expansion of ordinary uncached instances. A real electronic-component instance in the mouse scene had previously been omitted.
+- Converted the same untouched source to GLB and FBX and reimported both. Each has one visible wheel and 60 mesh objects: 59 retained visible source meshes plus one restored instance. All retained meshes match the earlier export's face counts and world bounds within 1e-6 Blender units; 15 hidden meshes are excluded. Upper shell (55,979 triangles), bottom shell (29,465), and side key (6,926) remain at their original positions.
+- Inspected actual Blender GUI scenes and workbench renders for both formats: one wheel, visible outer shell. The intermittent shell-disappearance report was not reproduced, so this release does not claim that symptom is conclusively resolved. The reflected-root/face-orientation inconsistency was separately corrected and checked against exported shell normals.
+- An original public-SDK regression fixture validates direct and inherited hiding, child ON override, editor-versus-render visibility, layer hiding, partial/all face hiding, two same-name objects at different positions, rotated nonuniform parent scaling, and a visible instance of a hidden source group. GLB, FBX and OBJ round trips each retain 7 expected meshes and 13 faces with checked positions and winding.
+- All 10 existing portable conversion tests pass. User source SHA-256 is unchanged. User models, paths, screenshots, converted files and private logs are excluded from the repository and package.
+- This is not exhaustive coverage of layer Solo, Takes, multi-instances, generator evaluation, modern C4D versions or third-party renderers. The existing MAX/3DS compatibility boundaries remain in effect; their visibility semantics are not covered by the C4D fixture.
+
 ## 1.0.1 regression
 
 - Reproduced a Windows Unicode argument bug: the same valid C4D fixture converted from an ASCII path, but the 1.0.0 engine could not open it when placed under a Chinese directory/name. The CLI accepted narrow ANSI arguments while Assimp file IO expected UTF-8.

@@ -11,7 +11,7 @@ from bpy.props import BoolProperty, CollectionProperty, EnumProperty, FloatPrope
 from bpy_extras.io_utils import poll_file_object_drop
 from . import core
 
-bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 1),
+bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 2),
            'blender': (4, 2, 0), 'location': 'File > Import / 3D View > Sidebar > JC',
            'description': 'Offline format conversion and import without Cinema 4D or 3ds Max',
            'category': 'Import-Export'}
@@ -70,6 +70,7 @@ class JCImportHelp(bpy.types.Operator):
                      'GLB：适合基础 PBR 材质；FBX：适合层级与可恢复的动画；OBJ：静态网格。',
                      'MAX：支持部分网格、基本体、材质与 UV，不计算原软件修改器。',
                      'C4D：读取已保存的网格及缓存；不能重新计算 MoGraph / 生成器。',
+                     'C4D 按编辑器可见状态转换，隐藏的备用件和面不导入。',
                      'DWG / SKP / IGES 等没有内置读取器的格式会明确提示，不调用原软件。',
                      '转换在后台运行，可在右侧 JC 面板取消；已导入的文件可用原生撤销。',
                      '转换缓存保留纹理，源文件不修改；模型不会上传网络。'):
@@ -137,6 +138,7 @@ class JCImportConvert(bpy.types.Operator):
             layout.label(text='MAX：恢复支持的网格 / UV / 基础材质，不能计算修改器。', icon='INFO')
         if '.c4d' in suffixes:
             layout.label(text='C4D：需有可读取网格或缓存，不计算生成器与 MoGraph。', icon='INFO')
+            layout.label(text='按编辑器可见状态转换，不导入隐藏的备用件。', icon='INFO')
         if '.3ds' in suffixes:
             layout.label(text='3DS：静态网格、UV、基础材质，不保留动画。', icon='INFO')
         for path in paths:

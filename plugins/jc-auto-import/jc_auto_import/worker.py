@@ -124,6 +124,7 @@ def main(job_path):
                 core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
                 warnings.append('GLB 中间转换失败，已使用 OBJ 恢复静态网格；该文件的动画 / 骨骼未保留。')
             if backend == 'c4d':
+                warnings.append('C4D 按编辑器可见状态转换：排除隐藏物体、隐藏图层上的物体及隐藏面；不以渲染可见性替代编辑器状态。')
                 warnings.append('C4D 独立读取依赖文件内的多边形缓存；不执行生成器、MoGraph 或第三方渲染器。')
             if not intermediate.is_file() or not intermediate.stat().st_size:
                 raise RuntimeError('引擎没有生成模型，请查看 engine.log。')

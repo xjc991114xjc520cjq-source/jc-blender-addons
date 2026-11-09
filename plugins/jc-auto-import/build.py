@@ -18,7 +18,10 @@ for name in FILES:
     if not path.is_file():
         raise FileNotFoundError(path)
 dist = ROOT / 'dist'; dist.mkdir(exist_ok=True)
-archive = dist / 'JC-Auto-Import-1.0.1-Windows.zip'
+version = ast.literal_eval(next(line.split('=', 1)[1].strip()
+                                for line in (SOURCE / 'blender_manifest.toml').read_text(encoding='utf-8').splitlines()
+                                if line.startswith('version = ')))
+archive = dist / ('JC-Auto-Import-' + version + '-Windows.zip')
 with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as out:
     for name in FILES:
         info = zipfile.ZipInfo(name, date_time=(2026, 11, 9, 0, 0, 0))

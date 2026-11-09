@@ -20,18 +20,19 @@ index a61cd4d..64bfcf3 100644
  
      SET(C4D_DEBUG_LIBRARIES
 diff --git a/code/AssetLib/C4D/C4DImporter.cpp b/code/AssetLib/C4D/C4DImporter.cpp
-index 7a15364..bcf2aee 100644
+index 7a15364..83f1741 100644
 --- a/code/AssetLib/C4D/C4DImporter.cpp
 +++ b/code/AssetLib/C4D/C4DImporter.cpp
-@@ -48,6 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@@ -48,6 +48,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
  #include "C4DImporter.h"
  #include <memory>
 +#include <cstring>
++#include <algorithm>
  #include <assimp/IOSystem.hpp>
  #include <assimp/scene.h>
  #include <assimp/ai_assert.h>
-@@ -64,8 +65,8 @@ namespace {
+@@ -64,8 +66,8 @@ namespace {
  
  aiString aiStringFrom(cineware::String const & cinestring) {
      aiString result;
@@ -42,7 +43,16 @@ index 7a15364..bcf2aee 100644
      return result;
  }
  
-@@ -257,7 +258,7 @@ void C4DImporter::ReadMaterials(BaseMaterial* mat) {
+@@ -146,7 +148,7 @@ void C4DImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
+     // convert left-handed to right-handed
+     pScene->mRootNode->mTransformation.a1 = 0.01f;
+     pScene->mRootNode->mTransformation.b2 = 0.01f;
+-    pScene->mRootNode->mTransformation.c3 = -0.01f;
++    pScene->mRootNode->mTransformation.c3 = 0.01f;
+ 
+     // first convert all materials
+     ReadMaterials(doc->GetFirstMaterial());
+@@ -257,7 +259,7 @@ void C4DImporter::ReadMaterials(BaseMaterial* mat) {
              auto const ai_name = aiStringFrom(mat->GetName());
              out->AddProperty(&ai_name, AI_MATKEY_NAME);
  
@@ -51,28 +61,109 @@ index 7a15364..bcf2aee 100644
  
              if (m.GetChannelState(CHANNEL_COLOR)) {
                  GeData data;
-@@ -325,7 +326,7 @@ void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
+@@ -287,14 +289,22 @@ void C4DImporter::ReadMaterials(BaseMaterial* mat) {
+ }
+ 
+ // ------------------------------------------------------------------------------------------------
+-void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
++void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent, bool editorVisible, bool referenceRoot) {
+     ai_assert(parent != nullptr );
+     std::vector<aiNode*> nodes;
+ 
+     // based on Cineware sample code
+     while (object) {
++        // C4D's editor dot is inherited; an explicit ON overrides a hidden
++        // parent. Keep transform nodes so visible descendants retain placement.
++        const Int32 mode = object->GetEditorMode();
++        const bool dotVisible = referenceRoot || (mode == MODE_UNDEF ? editorVisible : mode != MODE_OFF);
++        LayerObject* layer = object->GetLayerObject();
++        GeData layerView;
++        const bool layerVisible = !layer || !layer->GetParameter(ID_LAYER_VIEW, layerView) || layerView.GetInt32() != 0;
++        const bool visible = dotVisible && (referenceRoot || layerVisible);
+         const Int32 type = object->GetType();
+-        const Matrix& ml = object->GetMl();
++        const Matrix ml = referenceRoot ? Matrix() : object->GetMl();
+ 
+         aiNode* const nd = new aiNode();
+ 
+@@ -303,19 +313,19 @@ void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
+ 
+         nd->mTransformation.a1 = ml.v1.x;
+         nd->mTransformation.b1 = ml.v1.y;
+-        nd->mTransformation.c1 = ml.v1.z;
++        nd->mTransformation.c1 = -ml.v1.z;
+ 
+         nd->mTransformation.a2 = ml.v2.x;
+         nd->mTransformation.b2 = ml.v2.y;
+-        nd->mTransformation.c2 = ml.v2.z;
++        nd->mTransformation.c2 = -ml.v2.z;
+ 
+-        nd->mTransformation.a3 = ml.v3.x;
+-        nd->mTransformation.b3 = ml.v3.y;
++        nd->mTransformation.a3 = -ml.v3.x;
++        nd->mTransformation.b3 = -ml.v3.y;
+         nd->mTransformation.c3 = ml.v3.z;
+ 
+         nd->mTransformation.a4 = ml.off.x;
+         nd->mTransformation.b4 = ml.off.y;
+-        nd->mTransformation.c4 = ml.off.z;
++        nd->mTransformation.c4 = -ml.off.z;
+ 
+         nodes.push_back(nd);
+ 
+@@ -325,7 +335,7 @@ void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
              // TODO: read camera
          } else if (type == Olight) {
              // TODO: read light
 -        } else if (type == Opolygon) {
-+        } else if (type == Opolygon && !object->GetDeformCache()) {
++        } else if (type == Opolygon && visible && !object->GetDeformCache()) {
              aiMesh* const mesh = ReadMesh(object);
              if(mesh != nullptr) {
                  nd->mNumMeshes = 1;
-@@ -337,7 +338,10 @@ void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
+@@ -333,12 +343,39 @@ void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
+                 nd->mMeshes[0] = static_cast<unsigned int>(meshes.size());
+                 meshes.push_back(mesh);
+             }
+-        } else {
++        } else if (visible && type != Oinstance) {
              LogWarn("ignoring object: ", GetObjectTypeName(type));
          }
  
 -        RecurseHierarchy(object->GetDown(), nd);
+-        object = object->GetNext();
 +        // JC: read saved polygon/deformation caches without evaluating Cinema 4D.
 +        BaseObject* cache = object->GetDeformCache();
 +        if (!cache && type != Opolygon) cache = object->GetCache();
-+        RecurseHierarchy(cache ? cache : object->GetDown(), nd);
-         object = object->GetNext();
++        RecurseHierarchy(cache ? cache : object->GetDown(), nd, visible);
++        // A regular instance can reference a hidden mesh/group without a saved
++        // polygon cache. Expand its source in instance-local space once; never
++        // walk the source's siblings or apply its placement a second time.
++        if (visible && type == Oinstance && !cache) {
++            GeData link, modeData;
++            object->GetParameter(INSTANCEOBJECT_RENDERINSTANCE_MODE, modeData);
++            object->GetParameter(INSTANCEOBJECT_LINK, link);
++            BaseObject* source = static_cast<BaseObject*>(link.GetLink());
++            if (modeData.GetInt32() == INSTANCEOBJECT_RENDERINSTANCE_MODE_MULTIINSTANCE) {
++                LogWarn("multi-instance has no saved cache: ", nd->mName.C_Str());
++            } else if (source && referenceStack.insert(source).second) {
++                std::unique_ptr<aiNode> ref(new aiNode("<InstanceReference>"));
++                ref->mParent = nd;
++                RecurseHierarchy(source, ref.get(), true, true);
++                referenceStack.erase(source);
++                aiNode** children = new aiNode*[nd->mNumChildren + 1];
++                std::copy(nd->mChildren, nd->mChildren + nd->mNumChildren, children);
++                children[nd->mNumChildren++] = ref.release();
++                delete[] nd->mChildren;
++                nd->mChildren = children;
++            } else {
++                LogWarn("instance reference is missing or cyclic: ", nd->mName.C_Str());
++            }
++        }
++        object = referenceRoot ? nullptr : object->GetNext();
      }
  
-@@ -353,7 +357,7 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+     // copy nodes over to parent
+@@ -353,7 +390,7 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
      ai_assert( object->GetType() == Opolygon );
  
      // based on Cineware sample code
@@ -81,7 +172,30 @@ index 7a15364..bcf2aee 100644
      ai_assert(polyObject != nullptr);
  
      const Int32 pointCount = polyObject->GetPointCount();
-@@ -402,14 +406,14 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+@@ -370,7 +407,13 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+     ai_assert(polys != nullptr);
+ 
+     std::unique_ptr<aiMesh> mesh(new aiMesh());
+-    mesh->mNumFaces = static_cast<unsigned int>(polyCount);
++    BaseSelect* hidden = polyObject->GetPolygonH();
++    unsigned int visibleCount = 0;
++    for (Int32 i = 0; i < polyCount; ++i) {
++        if (!hidden || !hidden->IsSelected(i)) ++visibleCount;
++    }
++    if (!visibleCount) return nullptr;
++    mesh->mNumFaces = visibleCount;
+     aiFace* face = mesh->mFaces = new aiFace[mesh->mNumFaces]();
+ 
+     mesh->mPrimitiveTypes = aiPrimitiveType_TRIANGLE;
+@@ -381,6 +424,7 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+     // first count vertices
+     for (Int32 i = 0; i < polyCount; i++)
+     {
++        if (hidden && hidden->IsSelected(i)) continue;
+         vcount += 3;
+ 
+         // TODO: do we also need to handle lines or points with similar checks?
+@@ -402,14 +446,14 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
      BaseTag* tag = object->GetTag(Tnormal);
      NormalTag* normals_src = nullptr;
      if(tag) {
@@ -98,7 +212,7 @@ index 7a15364..bcf2aee 100644
          tangents = mesh->mTangents = new aiVector3D[mesh->mNumVertices]();
          bitangents = mesh->mBitangents = new aiVector3D[mesh->mNumVertices]();
      }
-@@ -417,8 +421,9 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+@@ -417,12 +461,14 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
      tag = object->GetTag(Tuvw);
      UVWTag* uvs_src = nullptr;
      if(tag) {
@@ -109,7 +223,35 @@ index 7a15364..bcf2aee 100644
      }
  
      // copy vertices and extra channels over and populate faces
-@@ -584,7 +589,7 @@ unsigned int C4DImporter::ResolveMaterial(PolygonObject* obj) {
+-    for (Int32 i = 0; i < polyCount; ++i, ++face) {
++    for (Int32 i = 0; i < polyCount; ++i) {
++        if (hidden && hidden->IsSelected(i)) continue;
+         ai_assert(polys[i].a < pointCount && polys[i].a >= 0);
+         const Vector& pointA = points[polys[i].a];
+         verts->x = pointA.x;
+@@ -566,6 +612,21 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+                 }
+             }
+         }
++        ++face;
++    }
++
++    // Convert C4D's left-handed coordinates in both geometry and local
++    // transforms (S * M * S), rather than leaving a reflected root for downstream
++    // exporters. The reflection reverses orientation, so reverse winding too.
++    for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
++        mesh->mVertices[i].z = -mesh->mVertices[i].z;
++        if (mesh->mNormals) mesh->mNormals[i].z = -mesh->mNormals[i].z;
++        if (mesh->mTangents) mesh->mTangents[i].z = -mesh->mTangents[i].z;
++        if (mesh->mBitangents) mesh->mBitangents[i].z = -mesh->mBitangents[i].z;
++    }
++    for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
++        aiFace& polygon = mesh->mFaces[i];
++        std::reverse(polygon.mIndices, polygon.mIndices + polygon.mNumIndices);
+     }
+ 
+     mesh->mMaterialIndex = ResolveMaterial(polyObject);
+@@ -584,7 +645,7 @@ unsigned int C4DImporter::ResolveMaterial(PolygonObject* obj) {
          return mat_count;
      }
  
@@ -118,6 +260,35 @@ index 7a15364..bcf2aee 100644
  
      BaseMaterial* const mat = ttag.GetMaterial();
      ai_assert(mat != nullptr);
+diff --git a/code/AssetLib/C4D/C4DImporter.h b/code/AssetLib/C4D/C4DImporter.h
+index 216c4b0..cd6f3ab 100644
+--- a/code/AssetLib/C4D/C4DImporter.h
++++ b/code/AssetLib/C4D/C4DImporter.h
+@@ -48,6 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <assimp/LogAux.h>
+ 
+ #include <map>
++#include <set>
+ 
+ // Forward declarations
+ struct aiNode;
+@@ -91,7 +92,7 @@ protected:
+ private:
+ 
+     void ReadMaterials(cineware::BaseMaterial* mat);
+-    void RecurseHierarchy(cineware::BaseObject* object, aiNode* parent);
++    void RecurseHierarchy(cineware::BaseObject* object, aiNode* parent, bool editorVisible = true, bool referenceRoot = false);
+     aiMesh* ReadMesh(cineware::BaseObject* object);
+     unsigned int ResolveMaterial(cineware::PolygonObject* obj);
+ 
+@@ -102,6 +103,7 @@ private:
+ 
+     typedef std::map<cineware::BaseMaterial*, unsigned int> MaterialMap;
+     MaterialMap material_mapping;
++    std::set<cineware::BaseObject*> referenceStack;
+ 
+ }; // !class C4DImporter
+ 
 diff --git a/tools/assimp_cmd/Main.cpp b/tools/assimp_cmd/Main.cpp
 index 7e40119..172da88 100644
 --- a/tools/assimp_cmd/Main.cpp

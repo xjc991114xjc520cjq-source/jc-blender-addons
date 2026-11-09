@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.20)
+project(jc_c4d_fixtures LANGUAGES CXX)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+add_executable(fixture fixture.cpp)
+target_include_directories(fixture PRIVATE "${SDK}/includes")
+target_compile_definitions(fixture PRIVATE __C4D_64BIT __PC)
+target_link_libraries(fixture PRIVATE "${SDK}/libraries/win/cinewarelib_2019_MT/cinewarelib_release.lib" "${SDK}/libraries/win/jpeglib_2019_MT/jpeglib_release.lib" WSock32 Winmm)
