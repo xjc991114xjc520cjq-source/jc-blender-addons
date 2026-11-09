@@ -1,0 +1,120 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a61cd4d..64bfcf3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -642,7 +642,7 @@ IF (ASSIMP_BUILD_NONFREE_C4D_IMPORTER)
+   IF (WIN32)
+     # pick the correct prebuilt library
+     IF(MSVC143)
+-      SET(C4D_LIB_POSTFIX "_2022")
++      SET(C4D_LIB_POSTFIX "_2019_MT")
+     ELSEIF(MSV142)
+       SET(C4D_LIB_POSTFIX "_2019")
+     ELSEIF(MSVC15)
+@@ -661,6 +661,7 @@ IF (ASSIMP_BUILD_NONFREE_C4D_IMPORTER)
+       )
+     ENDIF()
+ 
++    SET(C4D_LIB_POSTFIX "_2019_MT")
+     SET(C4D_LIB_BASE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/contrib/Cineware/libraries/win")
+ 
+     SET(C4D_DEBUG_LIBRARIES
+diff --git a/code/AssetLib/C4D/C4DImporter.cpp b/code/AssetLib/C4D/C4DImporter.cpp
+index 7a15364..bcf2aee 100644
+--- a/code/AssetLib/C4D/C4DImporter.cpp
++++ b/code/AssetLib/C4D/C4DImporter.cpp
+@@ -48,6 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include "C4DImporter.h"
+ #include <memory>
++#include <cstring>
+ #include <assimp/IOSystem.hpp>
+ #include <assimp/scene.h>
+ #include <assimp/ai_assert.h>
+@@ -64,8 +65,8 @@ namespace {
+ 
+ aiString aiStringFrom(cineware::String const & cinestring) {
+     aiString result;
+-    cinestring.GetCString(result.data, AI_MAXLEN - 1);
+-    result.length = static_cast<ai_uint32>(cinestring.GetLength());
++    cinestring.GetCString(result.data, AI_MAXLEN - 1, cineware::STRINGENCODING_UTF8);
++    result.length = static_cast<ai_uint32>(std::strlen(result.data));
+     return result;
+ }
+ 
+@@ -257,7 +258,7 @@ void C4DImporter::ReadMaterials(BaseMaterial* mat) {
+             auto const ai_name = aiStringFrom(mat->GetName());
+             out->AddProperty(&ai_name, AI_MATKEY_NAME);
+ 
+-            Material& m = dynamic_cast<Material&>(*mat);
++            Material& m = static_cast<Material&>(*mat);
+ 
+             if (m.GetChannelState(CHANNEL_COLOR)) {
+                 GeData data;
+@@ -325,7 +326,7 @@ void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
+             // TODO: read camera
+         } else if (type == Olight) {
+             // TODO: read light
+-        } else if (type == Opolygon) {
++        } else if (type == Opolygon && !object->GetDeformCache()) {
+             aiMesh* const mesh = ReadMesh(object);
+             if(mesh != nullptr) {
+                 nd->mNumMeshes = 1;
+@@ -337,7 +338,10 @@ void C4DImporter::RecurseHierarchy(BaseObject* object, aiNode* parent) {
+             LogWarn("ignoring object: ", GetObjectTypeName(type));
+         }
+ 
+-        RecurseHierarchy(object->GetDown(), nd);
++        // JC: read saved polygon/deformation caches without evaluating Cinema 4D.
++        BaseObject* cache = object->GetDeformCache();
++        if (!cache && type != Opolygon) cache = object->GetCache();
++        RecurseHierarchy(cache ? cache : object->GetDown(), nd);
+         object = object->GetNext();
+     }
+ 
+@@ -353,7 +357,7 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+     ai_assert( object->GetType() == Opolygon );
+ 
+     // based on Cineware sample code
+-    PolygonObject* const polyObject = dynamic_cast<PolygonObject*>(object);
++    PolygonObject* const polyObject = static_cast<PolygonObject*>(object);
+     ai_assert(polyObject != nullptr);
+ 
+     const Int32 pointCount = polyObject->GetPointCount();
+@@ -402,14 +406,14 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+     BaseTag* tag = object->GetTag(Tnormal);
+     NormalTag* normals_src = nullptr;
+     if(tag) {
+-        normals_src = dynamic_cast<NormalTag*>(tag);
++        normals_src = static_cast<NormalTag*>(tag);
+         normals = mesh->mNormals = new aiVector3D[mesh->mNumVertices]();
+     }
+ 
+     tag = object->GetTag(Ttangent);
+     TangentTag* tangents_src = nullptr;
+     if(tag) {
+-        tangents_src = dynamic_cast<TangentTag*>(tag);
++        tangents_src = static_cast<TangentTag*>(tag);
+         tangents = mesh->mTangents = new aiVector3D[mesh->mNumVertices]();
+         bitangents = mesh->mBitangents = new aiVector3D[mesh->mNumVertices]();
+     }
+@@ -417,8 +421,9 @@ aiMesh* C4DImporter::ReadMesh(BaseObject* object) {
+     tag = object->GetTag(Tuvw);
+     UVWTag* uvs_src = nullptr;
+     if(tag) {
+-        uvs_src = dynamic_cast<UVWTag*>(tag);
++        uvs_src = static_cast<UVWTag*>(tag);
+         uvs = mesh->mTextureCoords[0] = new aiVector3D[mesh->mNumVertices]();
++        mesh->mNumUVComponents[0] = 2;
+     }
+ 
+     // copy vertices and extra channels over and populate faces
+@@ -584,7 +589,7 @@ unsigned int C4DImporter::ResolveMaterial(PolygonObject* obj) {
+         return mat_count;
+     }
+ 
+-    TextureTag& ttag = dynamic_cast<TextureTag&>(*tag);
++    TextureTag& ttag = static_cast<TextureTag&>(*tag);
+ 
+     BaseMaterial* const mat = ttag.GetMaterial();
+     ai_assert(mat != nullptr);

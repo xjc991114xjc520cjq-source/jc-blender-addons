@@ -1,0 +1,14 @@
+schema_version = "1.0.0"
+id = "jc_auto_import"
+version = "1.0.0"
+name = "JC Auto Import"
+tagline = "Import models offline without the original application"
+maintainer = "JC"
+type = "add-on"
+website = "https://github.com/xjc991114xjc520cjq-source/jc-blender-addons"
+tags = ["Import-Export"]
+blender_version_min = "4.2.0"
+license = ["SPDX:GPL-3.0-or-later"]
+platforms = ["windows-x64"]
+[permissions]
+files = "Read models and textures; write conversion cache and logs"

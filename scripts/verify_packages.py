@@ -25,6 +25,8 @@ for plugin in catalog['plugins']:
                     original=source/Path(*relative.parts)
             elif plugin['id']=='jc-history':
                 original=source/'src/jc_history'/info.filename
+            elif plugin['id']=='jc-auto-import':
+                original=source/'jc_auto_import'/info.filename
             else:
                 original=source/info.filename
             assert original.read_bytes()==archive.read(info), str(original)
