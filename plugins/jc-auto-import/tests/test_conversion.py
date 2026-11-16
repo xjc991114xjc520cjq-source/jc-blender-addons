@@ -66,6 +66,9 @@ class ConversionTests(unittest.TestCase):
             module('three_ds').Reader(self.source).parse()
 
     def test_dependency_free_routing(self):
+        self.assertEqual(self.core.backend_for('file.STP'), 'cad')
+        self.assertEqual(self.core.backend_for('file.step'), 'cad')
+        self.assertFalse(self.core.requirement('file.stp'))
         self.assertEqual(self.core.backend_for('file.max'), 'max')
         self.assertEqual(self.core.backend_for('file.c4d'), 'c4d')
         self.assertEqual(self.core.backend_for('file.3ds'), '3ds')

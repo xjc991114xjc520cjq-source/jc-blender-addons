@@ -2,6 +2,14 @@
 
 Environment: Windows x64, Blender 5.2.1 LTS, build `9e2066aef7ef`.
 
+## 1.0.3 STEP regression — 2026-11-16
+
+- Verified in the locally installed Blender 5.2.2 LTS, build d13f752e3b9c. Existing C4D regression history below remains from 5.2.1; it is not relabeled as a new test.
+- Root cause: Assimp's IFC importer lists step/stp extensions but expects IFC schema. Common AP STEP B-rep is now routed to a bundled isolated OCP/OCCT process, with no installed CAD software, system Python, pip, or network needed at conversion time.
+- An original STEP fixture contains a box with a cylindrical through-hole, two positioned instances of that box, and a separate cylinder, with two colors. GLB, FBX and OBJ each round-trip to 3 mesh objects; expected metre bounds agree within 1e-5 and analytic volume within 1%, verifying that units, instance placement and holes survive. Cache reuse, corrupt-input failure/cleanup and unchanged source SHA-256 are tested. Existing 10 automated conversion tests pass.
+- The user's failing STEP was not provided at implementation time; this is fixture evidence, not proof for that specific model. External referenced documents, PMI and arbitrary malformed/large assemblies have not been comprehensively verified.
+- The final ZIP was installed and enabled in an isolated Unicode/emoji profile; its bundled CAD runtime converted and imported the STEP assembly. The real Blender window shows both through-holes and the separate cylinder. No user CAD file, scene, profile or log is packaged.
+
 ## 1.0.2 fidelity regression
 
 - Reproduced the reported extra wheel with the user's local C4D scene. The source contained hidden alternative meshes; the previous reader ignored editor visibility. Corrected the reader rather than deleting objects by name or shape.

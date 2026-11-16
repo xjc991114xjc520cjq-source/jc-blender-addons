@@ -97,6 +97,12 @@ def main(job_path):
             warnings.extend(three_ds.load(source))
         elif backend == 'native':
             import_model(source)
+        elif backend == 'cad':
+            intermediate = work / 'bridge.glb'
+            command = [core.engines()['cad'], '-B', '-X', 'utf8', str(ROOT / 'cad_worker.py'), str(source), str(intermediate)]
+            core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
+            import_model(intermediate)
+            warnings.append('STEP 使用独立 Open CASCADE 内核转换曲面与装配；输出为网格，不保留 CAD 参数历史。')
         elif backend == 'max':
             from vendor import import_max
             if not import_max.is_maxfile(str(source)):

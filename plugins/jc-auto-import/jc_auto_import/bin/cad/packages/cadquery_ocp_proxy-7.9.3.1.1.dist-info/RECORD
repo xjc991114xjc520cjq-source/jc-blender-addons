@@ -1,0 +1,5 @@
+cadquery_ocp_proxy/__init__.py,sha256=3BcBBr32Vnwe01XFVsI2JwceiDdNGDVu30zKWTNco_E,179
+cadquery_ocp_proxy/_version.py,sha256=9nadmnvEZ1oh5ofeaJHlyaRj5L1j9dJMrb59ikzDX9U,73
+cadquery_ocp_proxy-7.9.3.1.1.dist-info/WHEEL,sha256=f5fWSvWsg5Knq5GWa6t1nJIug0Tqo69GqAWD_9LbBKw,81
+cadquery_ocp_proxy-7.9.3.1.1.dist-info/METADATA,sha256=DUtieg5W5DVgq245Lz5eljGu_zRf68HfgUpsg4fT7jE,5160
+cadquery_ocp_proxy-7.9.3.1.1.dist-info/RECORD,,

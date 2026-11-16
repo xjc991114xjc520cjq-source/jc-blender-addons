@@ -5,7 +5,7 @@ import json
 import os
 import subprocess
 
-VERSION = '1.0.2'
+VERSION = '1.0.3'
 EXTERNAL_EXTENSIONS = ('.c4d', '.max', '.3ds', '.3d', '.dae', '.dxf', '.lwo', '.lws', '.lxo', '.ase', '.off', '.x', '.ac', '.ms3d', '.b3d', '.3mf', '.x3d', '.md2', '.md3', '.md5mesh', '.pmx', '.ifc', '.stp', '.step', '.wrl', '.vrml', '.skp', '.dwg', '.igs', '.iges', '.sat')
 NATIVE_EXTENSIONS = ('.fbx', '.obj', '.glb', '.gltf', '.stl', '.ply', '.usd', '.usda', '.usdc', '.usdz', '.abc')
 TARGETS = {'GLB': '.glb', 'FBX': '.fbx', 'OBJ': '.obj'}
@@ -20,6 +20,7 @@ def external_extensions():
 
 def engines():
     return {'c4d': str(ROOT / 'bin/jc_converter.exe'),
+            'cad': str(ROOT / 'bin/cad/python.exe'),
             'assimp': str(ROOT / 'bin/jc_converter.exe')}
 
 
@@ -27,6 +28,8 @@ def backend_for(path):
     suffix = Path(path).suffix.lower()
     if suffix in NATIVE_EXTENSIONS:
         return 'native'
+    if suffix in ('.stp', '.step'):
+        return 'cad'
     if suffix == '.3ds':
         return '3ds'
     if suffix == '.c4d':
@@ -47,6 +50,10 @@ def requirement(path):
         return '此版本仅打包 Windows x64 独立引擎。'
     if backend in ('c4d', 'assimp') and not Path(engines()[backend]).is_file():
         return '安装包中的独立转换引擎缺失，请重新安装完整 ZIP。'
+    if backend == 'cad' and not all((ROOT / name).is_file() for name in (
+            'bin/cad/runtime-files.json', 'bin/cad/python.exe', 'cad_worker.py',
+            'bin/cad/packages/OCP/OCP.cp313-win_amd64.pyd')):
+        return '安装包中的 STEP 曲面转换组件缺失，请安装完整版本。'
     if backend == 'assimp':
         capabilities = json.loads((ROOT / 'capabilities.json').read_text(encoding='utf-8'))
         if Path(path).suffix.lower() not in capabilities['assimp_extensions']:

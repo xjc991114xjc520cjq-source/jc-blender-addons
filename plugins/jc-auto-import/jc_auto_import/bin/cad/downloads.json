@@ -1,0 +1,20 @@
+[
+  {
+    "name": "python-3.13.13-embed-amd64.zip",
+    "url": "https://www.python.org/ftp/python/3.13.13/python-3.13.13-embed-amd64.zip",
+    "sha256": "8766a8775746235e23cf5aee5027ab1060bb981d93110577adcf3508aa0cbd55",
+    "bytes": 10950201
+  },
+  {
+    "name": "cadquery_ocp_novtk-7.9.3.1.1-cp313-cp313-win_amd64.whl",
+    "url": "https://files.pythonhosted.org/packages/57/48/4595c22b0ae1b4759f209a13d21dadd229db6c374d9b0a95afa7ed0c4714/cadquery_ocp_novtk-7.9.3.1.1-cp313-cp313-win_amd64.whl",
+    "sha256": "3390be6d8199a50b01ae0137a60f56d0cfecd8753dbee08532bbbeb8b7169682",
+    "bytes": 46364506
+  },
+  {
+    "name": "cadquery_ocp_proxy-7.9.3.1.1-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/30/c0/04e9363a99fee892de2776820e3dcf04f8825b6edc9580efe3416c9465a7/cadquery_ocp_proxy-7.9.3.1.1-py3-none-any.whl",
+    "sha256": "ca4164ec4b54956d9fc3e68c67d555b5486cb963c2f71e18df005ba16b921c91",
+    "bytes": 3322
+  }
+]

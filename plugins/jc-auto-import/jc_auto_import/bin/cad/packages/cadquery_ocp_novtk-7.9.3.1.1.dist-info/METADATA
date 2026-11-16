@@ -1,0 +1,24 @@
+Metadata-Version: 2.4
+Name: cadquery-ocp-novtk
+Version: 7.9.3.1.1
+Summary: Python wrapper for Open CASCADE Technology 3D geometry library based on the official CadQuery/OCP sources (no VTK support)
+Author: Bernhard Walter
+License: Apache-2.0
+Classifier: License :: OSI Approved :: Apache Software License
+Requires-Python: <3.15,>=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: cadquery-ocp-proxy==7.9.3.1.1
+
+# cadquery-ocp-novtk (also known as OCP)
+
+Python wrapper for OCCT generated using pywrap. Typing [stubs](https://pypi.org/project/cadquery-ocp-stubs/) available from pypi.
+Note: VTK is not supported with cadquery-ocp-novtk.
+
+## Goals of OCP
+* Provide thin bindings to OCCT.
+* Wrap all OCCT modules (if practical).
+* React quickly to new OCCT releases.
+* Cater primarily for the CadQuery project.
+
+## Non-goals
+* Provide additional functionality not present in OCCT

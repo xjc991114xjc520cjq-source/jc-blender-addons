@@ -14,3 +14,7 @@ Source: https://github.com/nrgsille76/io_scene_max
 - Maxon Cineware SDK S22.008: compiled static library integrated into this conversion component. Maxon retains its rights. See `bin/CINEWARE-LICENSE.txt` and https://developers.maxon.net/downloads/. The SDK source archive, static library files, programming examples and documentation are not distributed in this package.
 
 The Python add-on license does not relicense Maxon Cineware. Source and rebuild instructions for the Assimp changes are in the repository's `engine/` folder. No third-party trademarks imply endorsement.
+
+## Independent CAD runtime (1.0.3)
+
+STEP uses a bundled CPython + CadQuery OCP/Open CASCADE process, not the Assimp IFC reader. See `bin/cad/NOTICE.md`, `bin/cad/licenses/` and `bin/cad/LICENSE.txt` for component licenses, sources and redistribution notices. The Python add-on license does not replace these component licenses.
