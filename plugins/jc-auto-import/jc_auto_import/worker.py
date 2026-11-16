@@ -102,6 +102,11 @@ def main(job_path):
             command = [core.engines()['cad'], '-B', '-X', 'utf8', str(ROOT / 'cad_worker.py'), str(source), str(intermediate)]
             core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
             import_model(intermediate)
+            cad_lines = (job_path.parent / 'engine.log').read_text(encoding='utf-8', errors='replace').splitlines()
+            cad_report = next((json.loads(line) for line in reversed(cad_lines) if line.startswith('{') and 'repaired_faces' in line), {})
+            recovered = sum(cad_report.get('repaired_faces', {}).values())
+            if recovered:
+                warnings.append('STEP 已对 %d 个异常面重新网格化；平面边界修复受误差和面积检查约束，未修改源文件。' % recovered)
             warnings.append('STEP 使用独立 Open CASCADE 内核转换曲面与装配；输出为网格，不保留 CAD 参数历史。')
         elif backend == 'max':
             from vendor import import_max

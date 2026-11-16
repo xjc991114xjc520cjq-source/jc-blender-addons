@@ -34,12 +34,56 @@ def verify(outputs):
         print('STEP_ROUNDTRIP_PASS',target,'3 parts, units, bounds, holes, colors',flush=True)
 
 
+def verify_repairs():
+    sys.path.insert(0,str(PLUGIN/'bin/cad/packages'))
+    sys.path.insert(0,str(PLUGIN))
+    import cad_worker
+    from OCP.gp import gp_Pnt,gp_Pln,gp_Dir
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakePolygon,BRepBuilderAPI_MakeFace
+    from OCP.BRep import BRep_Tool
+    from OCP.TopLoc import TopLoc_Location
+    plane=gp_Pln(gp_Pnt(0,0,0),gp_Dir(0,0,1))
+    clean=[gp_Pnt(0,0,0),gp_Pnt(2,0,0),gp_Pnt(2,2,0),gp_Pnt(0,2,0)]
+    assert cad_worker.remove_tiny_crossings(clean,plane)==clean
+    # Reject a materially self-intersecting bow-tie rather than deleting its area.
+    large=[gp_Pnt(0,0,0),gp_Pnt(2,2,0),gp_Pnt(0,2,0),gp_Pnt(2,0,0)]
+    assert cad_worker.remove_tiny_crossings(large,plane) is None
+    # A microscopic sliver at a sampled trim is recoverable with bounded change.
+    tiny=[gp_Pnt(0,0,0),gp_Pnt(1,0,0),gp_Pnt(1.2,.0001,0),gp_Pnt(1,.0001,0),gp_Pnt(1.2,0,0),gp_Pnt(2,0,0),gp_Pnt(2,2,0),gp_Pnt(0,2,0)]
+    result=cad_worker.remove_tiny_crossings(tiny,plane)
+    assert result is not None and len(result)<len(tiny)
+    polygon=BRepBuilderAPI_MakePolygon()
+    for p in clean:polygon.Add(p)
+    polygon.Close();face=BRepBuilderAPI_MakeFace(plane,polygon.Wire(),True).Face()
+    assert cad_worker.repair_face_mesh(face)=='fresh-face'
+    assert BRep_Tool.Triangulation_s(face,TopLoc_Location()).NbTriangles()==2
+    # Force only the first copied-face mesher attempt to fail, so the bounded
+    # planar reconstruction branch is exercised without private CAD fixtures.
+    from unittest.mock import patch
+    from OCP.BRepMesh import BRepMesh_IncrementalMesh
+    polygon=BRepBuilderAPI_MakePolygon()
+    for p in clean:polygon.Add(p)
+    polygon.Close();face=BRepBuilderAPI_MakeFace(plane,polygon.Wire(),True).Face()
+    attempts=[]
+    def mesh_after_first(*args):
+        attempts.append(1)
+        if len(attempts)>1:return BRepMesh_IncrementalMesh(*args)
+    with patch('OCP.BRepMesh.BRepMesh_IncrementalMesh',side_effect=mesh_after_first):
+        assert cad_worker.repair_face_mesh(face)=='planar-trim'
+    assert BRep_Tool.Triangulation_s(face,TopLoc_Location()).NbTriangles()==2
+    print('STEP_FACE_REPAIR_TESTS_PASS')
+
+
 def main():
+    if '--repair-check' in sys.argv:
+        verify_repairs()
+        return
     if '--' in sys.argv:
         verify(json.loads(Path(sys.argv[-1]).read_text(encoding='utf-8')))
         return
     parser=argparse.ArgumentParser();parser.add_argument('--blender',required=True);args=parser.parse_args()
     python=PLUGIN/'bin/cad/python.exe'
+    subprocess.run([str(python),'-B','-X','utf8',str(Path(__file__).resolve()),'--repair-check'],check=True,timeout=60)
     with tempfile.TemporaryDirectory(prefix='jc-step-') as temporary:
         root=Path(temporary)
         subprocess.run([str(python),'-B','-X','utf8',str(ROOT/'engine/tests/step_fixture.py'),str(root)],check=True,timeout=60)

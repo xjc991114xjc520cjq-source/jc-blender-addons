@@ -2,6 +2,14 @@
 
 Environment: Windows x64, Blender 5.2.1 LTS, build `9e2066aef7ef`.
 
+## 1.0.4 STEP real-file regression — 2026-11-16
+
+- Both user-supplied STEP files failed with the unchanged published 1.0.3 ZIP: one/two unmeshed faces caused all GLB/FBX/OBJ targets to abort. Source SHA-256 remained unchanged.
+- Added isolated face-remeshing and tightly bounded planar trim reconstruction, retaining document topology and instance placement. One common small abnormal face recovers through a fresh geometry copy. The second model also needs planar trim reconstruction; a microscopic self-intersecting sampled loop is removed under area/span constraints. No whole face or part is dropped to produce a result.
+- Retested both real files through the packaged 1.0.4 worker for GLB, FBX and OBJ, then reimported all six outputs into Blender 5.2.2 LTS. Mesh counts match source XCAF leaf instances containing faces: 44 and 41. Each source also has three non-face-bearing labels, skipped by the GLB writer. Triangle counts remain 223,412 and 287,850 across the three formats. No unmeshed face remains. Overall world bounds match the analytic CAD bounds to less than 0.016 mm. Source hashes remain unchanged.
+- Real model workbench renders and native Blender scenes were inspected for shell/wheel presence. This checks visible shape and numerical bounds/counts; it is not proof of exact CAD topology or full material fidelity. Recovered planar trims are approximations, not lossless repairs.
+- Regression tests cover fresh-face recovery, rejecting a materially self-intersecting polygon, removing a bounded microscopic loop, the previous three-format/units/hole/assembly tests, cache/error cleanup, and the existing 10 conversion tests. User STEP sources, converted models, screenshots and private paths/logs remain outside the public repository.
+
 ## 1.0.3 STEP regression — 2026-11-16
 
 - Verified in the locally installed Blender 5.2.2 LTS, build d13f752e3b9c. Existing C4D regression history below remains from 5.2.1; it is not relabeled as a new test.
