@@ -2,14 +2,21 @@
 
 保存当前定稿的 Blender 小插件：可直接安装的 ZIP、对应源码、中文说明和校验值。
 
-## 当前最终版
+> 当前分支为 **KeyShot 实验分支**。JC 自动转换导入 1.0.5 仅实验性读取 DAL 024 已保存网格，不保证 KeyShot 全版本、纹理材质或全部隐藏状态。主分支稳定版仍为 1.0.4。
+> [实验版说明](plugins/jc-auto-import/) · [GitHub 预发布](https://github.com/xjc991114xjc520cjq-source/jc-blender-addons/releases/tag/auto-import-v1.0.5-beta.1)
+
+## 源码测试版的安装包
+
+完整 1.0.5 Windows ZIP 已完成本机验证，但大文件上传持续超时，因此本测试分支和 GitHub 预发布暂不包含该 ZIP。已有本机交付包可以直接安装。开发者在 Windows 上获取本仓库完整源码后，可运行 `python scripts/build_auto_import_preview.py`，离线构建并验证与已测试安装包相同的 SHA-256。此命令会先构建安装包，再运行完整归档检查。
+
+## 当前分支版本
 
 | 插件 | 版本 | 安装包 | 源码与说明 |
 | --- | --- | --- | --- |
 | JC Blender Agent | 0.1.5 | [下载 ZIP](packages/JC-Blender-Agent-0.1.5.zip) | [源码 / 说明](plugins/jc-blender-agent/) |
 | JC 历史记录 | 1.0.1 | [下载 ZIP](packages/JC_History_1.0.1_Blender52.zip) | [源码 / 说明](plugins/jc-history/) |
 | JC 六向视图导航 | 1.1.0 | [下载 ZIP](packages/JC-View-Navigator-1.1.0.zip) | [源码 / 说明](plugins/jc-view-navigator/) |
-| JC 自动转换导入 | 1.0.4 | [下载 ZIP](packages/JC-Auto-Import-1.0.4-Windows.zip) | [源码 / 说明](plugins/jc-auto-import/) |
+| JC 自动转换导入 | 1.0.5 实验版 | [实验版源码与构建说明](plugins/jc-auto-import/) | [源码 / 说明](plugins/jc-auto-import/) |
 
 - **自动转换导入**：无需安装 C4D / 3ds Max，内置独立转换组件；原生格式弹窗、GLB / FBX / OBJ 输出、后台转换与缓存。MAX / C4D 及其他格式的兼容限制和实测边界见插件说明。
 - **Agent**：Codex / Claude Code / API 接入 Blender 的 MCP 控制链，支持模型列表、附件路径引用、本机 API 配置保存，以及可开关、随插件携带的产品渲染经验库。Claude Code 的真实账号联调边界见插件说明。

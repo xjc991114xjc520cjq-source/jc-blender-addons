@@ -24,3 +24,5 @@ heartbeat.json
 Profiles/
 .DS_Store
 Thumbs.db
+# Experimental source publication rebuilds this installer locally.
+/packages/JC-Auto-Import-1.0.5-Windows.zip

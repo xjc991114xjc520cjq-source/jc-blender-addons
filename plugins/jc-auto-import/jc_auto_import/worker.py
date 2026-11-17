@@ -70,7 +70,8 @@ def main(job_path):
         if missing:
             raise RuntimeError(missing)
         progress('正在检查源文件与缓存…')
-        key = core.fingerprint(source, target, bpy.app.version_string)
+        options = {'keyshot_model_set': job.get('keyshot_model_set', '')} if backend == 'keyshot' else None
+        key = core.fingerprint(source, target, bpy.app.version_string, options)
         cache = Path(job['cache']).resolve()
         # Cache must not be under the model asset tree (it invalidates itself).
         if source.parent == cache or source.parent in cache.parents:
@@ -97,6 +98,9 @@ def main(job_path):
             warnings.extend(three_ds.load(source))
         elif backend == 'native':
             import_model(source)
+        elif backend == 'keyshot':
+            import keyshot
+            warnings.extend(keyshot.load(source, job.get('keyshot_model_set', '')))
         elif backend == 'cad':
             intermediate = work / 'bridge.glb'
             command = [core.engines()['cad'], '-B', '-X', 'utf8', str(ROOT / 'cad_worker.py'), str(source), str(intermediate)]

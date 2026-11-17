@@ -5,7 +5,7 @@ import json
 import os
 import subprocess
 
-VERSION = '1.0.4'
+VERSION = '1.0.5'
 EXTERNAL_EXTENSIONS = ('.c4d', '.max', '.3ds', '.3d', '.dae', '.dxf', '.lwo', '.lws', '.lxo', '.ase', '.off', '.x', '.ac', '.ms3d', '.b3d', '.3mf', '.x3d', '.md2', '.md3', '.md5mesh', '.pmx', '.ifc', '.stp', '.step', '.wrl', '.vrml', '.skp', '.dwg', '.igs', '.iges', '.sat')
 NATIVE_EXTENSIONS = ('.fbx', '.obj', '.glb', '.gltf', '.stl', '.ply', '.usd', '.usda', '.usdc', '.usdz', '.abc')
 TARGETS = {'GLB': '.glb', 'FBX': '.fbx', 'OBJ': '.obj'}
@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent
 def external_extensions():
     path = ROOT / 'capabilities.json'
     extra = json.loads(path.read_text(encoding='utf-8'))['assimp_extensions'] if path.is_file() else []
-    return tuple(sorted((set(EXTERNAL_EXTENSIONS) | set(extra)) - set(NATIVE_EXTENSIONS) - {'.blend'}))
+    return tuple(sorted((set(EXTERNAL_EXTENSIONS) | set(extra) | {'.bip', '.ksp'}) - set(NATIVE_EXTENSIONS) - {'.blend'}))
 
 
 def engines():
@@ -28,6 +28,8 @@ def backend_for(path):
     suffix = Path(path).suffix.lower()
     if suffix in NATIVE_EXTENSIONS:
         return 'native'
+    if suffix in ('.bip', '.ksp'):
+        return 'keyshot'
     if suffix in ('.stp', '.step'):
         return 'cad'
     if suffix == '.3ds':
@@ -58,17 +60,20 @@ def requirement(path):
         capabilities = json.loads((ROOT / 'capabilities.json').read_text(encoding='utf-8'))
         if Path(path).suffix.lower() not in capabilities['assimp_extensions']:
             return '内置引擎不支持此格式；本插件不会调用或要求安装原软件。'
+    if backend == 'keyshot' and (not (ROOT / 'keyshot.py').is_file() or
+            len(list((ROOT / 'bin/cad/packages/cadquery_ocp_novtk.libs').glob('zstd-*.dll'))) != 1):
+        return '安装包中的 KeyShot 独立读取组件缺失，请安装完整实验版。'
     return ''
 
 
-def fingerprint(source, target, blender_version):
+def fingerprint(source, target, blender_version, options=None):
     """Conservative cache: include all adjacent assets, up to 10000 files.
 
     Huge trees bypass reuse. The full source is hashed; sidecars use size/mtime.
     """
     source = Path(source).resolve()
     digest = hashlib.sha256()
-    digest.update(json.dumps([VERSION, str(source), target, blender_version], sort_keys=True).encode())
+    digest.update(json.dumps([VERSION, str(source), target, blender_version, options], sort_keys=True).encode())
     digest.update((ROOT / 'capabilities.json').read_bytes())
     with source.open('rb') as stream:
         for block in iter(lambda: stream.read(1024 * 1024), b''):

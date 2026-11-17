@@ -11,7 +11,7 @@ from bpy.props import BoolProperty, CollectionProperty, EnumProperty, FloatPrope
 from bpy_extras.io_utils import poll_file_object_drop
 from . import core
 
-bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 4),
+bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 5),
            'blender': (4, 2, 0), 'location': 'File > Import / 3D View > Sidebar > JC',
            'description': 'Offline format conversion and import without Cinema 4D or 3ds Max',
            'category': 'Import-Export'}
@@ -72,6 +72,7 @@ class JCImportHelp(bpy.types.Operator):
                      'C4D：读取已保存的网格及缓存；不能重新计算 MoGraph / 生成器。',
                      'C4D 按编辑器可见状态转换，隐藏的备用件和面不导入。',
                      'STP / STEP：独立 CAD 曲面网格化，保留可恢复的装配与颜色。',
+                     'KeyShot 实验版：只验证 DAL 024 缓存网格；不保证全版本或完整材质。',
                      'DWG / SKP / IGES 等没有内置读取器的格式会明确提示，不调用原软件。',
                      '转换在后台运行，可在右侧 JC 面板取消；已导入的文件可用原生撤销。',
                      '转换缓存保留纹理，源文件不修改；模型不会上传网络。'):
@@ -109,6 +110,7 @@ class JCImportConvert(bpy.types.Operator):
     target: EnumProperty(name='转换格式', items=[('GLB', 'GLB', '材质与几何体，推荐'), ('FBX', 'FBX', '层级与可恢复的动画'), ('OBJ', 'OBJ', '静态几何体与基础材质')], default='GLB')
     reuse: BoolProperty(name='复用转换缓存', default=True, description='源文件或相邻素材变化后会重新转换')
     scale: FloatProperty(name='导入缩放', default=1.0, min=0.000001, max=1000000.0)
+    keyshot_model_set: StringProperty(name='KeyShot 模型集', default='', description='留空读取源文件当前模型集；也可填写已保存的模型集名称，避免多个方案叠加')
     _process = None
     _timer = None
     _run = None
@@ -142,6 +144,12 @@ class JCImportConvert(bpy.types.Operator):
             layout.label(text='按编辑器可见状态转换，不导入隐藏的备用件。', icon='INFO')
         if '.3ds' in suffixes:
             layout.label(text='3DS：静态网格、UV、基础材质，不保留动画。', icon='INFO')
+        if suffixes & {'.bip', '.ksp'}:
+            box = layout.box()
+            box.label(text='KeyShot 实验性支持 · DAL 024 缓存网格', icon='EXPERIMENTAL')
+            box.prop(self, 'keyshot_model_set')
+            box.label(text='留空使用当前模型集；多个方案不会全部叠加。')
+            box.label(text='仅基础颜色；纹理、动画及所有隐藏状态尚未完整恢复。', icon='INFO')
         for path in paths:
             error = core.requirement(path)
             if error:
@@ -196,7 +204,7 @@ class JCImportConvert(bpy.types.Operator):
         self._timeout = prefs.timeout if prefs else 300
         self._file_started = time.monotonic()
         job = dict(source=self._queue[self._done], target=self.target, cache=str(self._cache),
-                   reuse=self.reuse, timeout=self._timeout)
+                   reuse=self.reuse, timeout=self._timeout, keyshot_model_set=self.keyshot_model_set)
         core.atomic_json(self._run / 'job.json', job)
         command = [bpy.app.binary_path, '--background', '--factory-startup', '--disable-autoexec',
                    '--python-exit-code', '1', '--python', str(core.ROOT / 'worker.py'), '--', str(self._run / 'job.json')]

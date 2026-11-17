@@ -3,7 +3,7 @@ from pathlib import Path
 import ast, hashlib, json, zipfile
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT / 'jc_auto_import'
-FILES = ['__init__.py', 'core.py', 'worker.py', 'cad_worker.py', 'three_ds.py', 'blender_manifest.toml',
+FILES = ['__init__.py', 'core.py', 'worker.py', 'cad_worker.py', 'keyshot.py', 'three_ds.py', 'blender_manifest.toml',
          'capabilities.json', '使用说明.md', 'LICENSE.txt', 'THIRD_PARTY_NOTICES.md',
          'vendor/__init__.py', 'vendor/import_max.py', 'vendor/MAX_IMPORTER_LICENSE',
          'bin/jc_converter.exe', 'bin/ASSIMP-LICENSE.txt', 'bin/CINEWARE-LICENSE.txt']
@@ -20,6 +20,7 @@ capabilities=json.loads((SOURCE/'capabilities.json').read_text(encoding='utf-8')
 capabilities['engine_sha256']=hashlib.sha256((SOURCE/'bin/jc_converter.exe').read_bytes()).hexdigest()
 capabilities['max_reader_sha256']=hashlib.sha256((SOURCE/'vendor/import_max.py').read_bytes()).hexdigest()
 capabilities['cad_runtime_sha256']=hashlib.sha256((runtime/'runtime-files.json').read_bytes()).hexdigest()
+capabilities['keyshot_reader_sha256']=hashlib.sha256((SOURCE/'keyshot.py').read_bytes()).hexdigest()
 (SOURCE/'capabilities.json').write_text(json.dumps(capabilities,indent=2)+'\n',encoding='utf-8')
 for name in FILES:
     path = SOURCE / name

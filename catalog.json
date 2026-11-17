@@ -35,12 +35,14 @@
     {
       "id": "jc-auto-import",
       "name": "JC 自动转换导入",
-      "version": "1.0.4",
-      "archive": "JC-Auto-Import-1.0.4-Windows.zip",
-      "sha256": "cc06eafac90b499fbb2211e5787885081a4fe81812c351b4afdf8ffd57890e55",
-      "package": "packages/JC-Auto-Import-1.0.4-Windows.zip",
+      "version": "1.0.5",
+      "archive": "JC-Auto-Import-1.0.5-Windows.zip",
+      "sha256": "095e8b30111d19da1013c56674a42de58aaf171df0789cebc06e8257f58c33c5",
+      "package": "packages/JC-Auto-Import-1.0.5-Windows.zip",
       "source": "plugins/jc-auto-import",
-      "bytes": 60505218
+      "bytes": 60514879,
+      "channel": "experimental",
+      "release": "auto-import-v1.0.5-beta.1"
     }
   ]
 }
