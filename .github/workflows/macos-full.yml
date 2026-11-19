@@ -17,6 +17,13 @@ jobs:
           python-version: '3.13'
       - name: Build native conversion and CAD engines
         run: python macos/build_full.py
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            macos/jc-auto-import/jc_auto_import/bin
+            macos/jc-auto-import/jc_auto_import/capabilities.json
+            ${{ runner.temp }}/jc-native-build/visibility.c4d
+          key: native-engines-${{ hashFiles('macos/build_full.py', 'plugins/jc-auto-import/engine/assimp-jc.patch') }}
       - name: Install Blender arm64 for conversion acceptance
         run: |
           curl --fail --location --retry 3 https://download.blender.org/release/Blender5.2/blender-5.2.4-macos-arm64.dmg -o "$RUNNER_TEMP/blender.dmg"
@@ -29,6 +36,12 @@ jobs:
           python macos/jc-auto-import/tests/test_conversion.py --blender "$BLENDER" -v
           python macos/jc-auto-import/tests/test_step.py --blender "$BLENDER"
           python macos/jc-auto-import/tests/test_c4d_fidelity.py --blender "$BLENDER" --fixture "$RUNNER_TEMP/jc-native-build/visibility.c4d"
+          "$BLENDER" --background --factory-startup --python-exit-code 1 --python macos/tests/test_blender_registration.py
+      - name: Test Mac Agent protocol and prompt regressions
+        run: |
+          python -m pip install mcp pillow
+          python macos/tests/test_agent.py
+          python macos/jc-blender-agent/tests/test_bridge.py -v
       - name: Package full macOS builds
         run: python macos/build.py --full
       - uses: actions/upload-artifact@v4

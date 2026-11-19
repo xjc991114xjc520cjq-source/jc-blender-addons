@@ -23,14 +23,19 @@ def load_core():
 
 
 class MacTests(unittest.TestCase):
-    def test_native_formats_and_python_readers_work_without_windows_engine(self):
+    def test_full_formats_use_mac_engines_and_match_windows_declarations(self):
         core = load_core()
-        with patch.object(core.os, 'name', 'posix'):
-            for suffix in core.NATIVE_EXTENSIONS + ('.max', '.3ds'):
+        with patch.object(core.os, 'name', 'posix'), \
+             patch.object(Path, 'is_file', return_value=True), \
+             patch.object(core.os, 'access', return_value=True):
+            for suffix in core.NATIVE_EXTENSIONS + ('.max', '.3ds', '.c4d', '.stp', '.step', '.dae', '.dxf', '.lwo', '.3mf'):
                 self.assertEqual(core.requirement('fixture' + suffix), '')
-            for suffix in ('.c4d', '.stp', '.step', '.dae', '.dxf', '.lwo', '.3mf', '.dwg', '.skp'):
+            for suffix in ('.dwg', '.skp', '.igs', '.sat'):
                 self.assertTrue(core.requirement('fixture' + suffix), suffix)
-        self.assertEqual(set(core.external_extensions()), {'.max', '.3ds'})
+        windows = json.loads((ROOT / 'plugins/jc-auto-import/jc_auto_import/capabilities.json').read_text())
+        mac = json.loads((core.ROOT / 'capabilities.json').read_text())
+        self.assertEqual(set(mac['assimp_extensions']), set(windows['assimp_extensions']))
+        self.assertTrue(all('.exe' not in p for p in core.engines().values()))
 
     def test_keychain_routes_normalized_endpoint_without_plaintext_settings(self):
         with patch.object(local_api.sys, 'platform', 'darwin'), \
