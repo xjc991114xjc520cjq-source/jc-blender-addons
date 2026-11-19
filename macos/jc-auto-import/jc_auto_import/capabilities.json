@@ -74,7 +74,9 @@
     ".zae",
     ".zgl"
   ],
-  "engine_sha256": "d59ce27b0e2a3dfeed1f851305c4b1f9209026fb27d671218eaef4bf0d5f87a0",
-  "max_reader_sha256": "1b786ebe82d2a1c0df273514af449e8b91430672abafde3de4ee634f2432320d",
-  "cad_runtime_sha256": "cd9630a45bb2a4c81a7ec8041f4cbfdda75d86dd8d34ff0846a268a636bb0a3c"
+  "engine_sha256": "dc9df4b373aa5f6ed998a687d00f861ed63109134467daa05e68a0b0fbe6ae9d",
+  "max_reader_sha256": "d11c932e67ca2ce95c5061e9c49916200110a434ed1f4cce064e1ede1966cede",
+  "cad_runtime_sha256": "7f1023530b672f2b01093c9972e68d2bb43f6bb2854f8be61a0ee58341cd4a14",
+  "platform": "macos-arm64",
+  "edition": "macos.2"
 }

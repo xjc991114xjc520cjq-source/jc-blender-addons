@@ -1,6 +1,6 @@
-# Apple Silicon（M 系列）完整适配版 · 修订 2
+# Apple Silicon（M 系列）完整适配版 · 修订 3
 
-四类插件均面向原生 arm64 Blender。自动导入采用与 Windows 1.0.4 相同的读取器和格式能力，不再使用删减格式的基础版。
+四类插件均面向原生 arm64 Blender。自动导入采用与 Windows 1.0.5 相同的读取器和格式能力，不再使用删减格式的基础版。
 Apple Silicon 构建及格式回归的实际结果见 VALIDATION.md。
 
 | 插件 | 基线 | Mac 适配 |
@@ -8,7 +8,7 @@ Apple Silicon 构建及格式回归的实际结果见 VALIDATION.md。
 | Agent | 0.1.5 | Blender.app 内 Python、CLI 定位、GUI PATH、登录钥匙串、Finder 单文件引用 |
 | 历史记录 | 1.0.1 | 复用纯 Python 实现，需要 Blender 5.2+ |
 | 六向视图导航 | 1.1.0 | 复用原生导航绘制，需要 Blender 4.2+ |
-| 自动转换导入 | 1.0.4 | ARM64 Assimp + Cineware、ARM64 Python + Open CASCADE，需要 Blender 4.2+ |
+| 自动转换导入 | 1.0.5 | ARM64 Assimp + Cineware、ARM64 Python + Open CASCADE，需要 Blender 4.2+ |
 
 用户提供的 Agent ZIP 与仓库 0.1.5 归档完全相同，SHA-256：
 `e684c59df0cbef547c1eb8961540794404b094ae62d75d46b4945f8e013b17c5`。
@@ -66,3 +66,7 @@ python scripts/verify_packages.py
 下载来源和 SHA-256 固定；SDK 只在构建临时目录使用，不发布 SDK、SDK 示例或用户模型。
 插件含许可证、组件来源和运行时逐文件清单。转换程序使用 Apple 系统框架和系统 zlib。
 GitHub Actions 的 Build full Apple Silicon plugins 在原生 Mac 构建并运行格式回归。
+
+## 1.0.5 大型模型转换
+
+Windows 和 Mac 均默认不限转换总时长，保留 Esc 取消。需要限时可在偏好设置主动开启「启用单文件总时限」（最长 7 天）；读取、网格化、导出及备用转换共享单个文件的预算。旧版保存的 300 秒不会自动生效。
