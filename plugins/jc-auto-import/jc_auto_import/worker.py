@@ -59,6 +59,7 @@ def main(job_path):
         core.atomic_json(status, {'message': message})
     work = None
     try:
+        deadline = job['deadline'] if 'deadline' in job else core.make_deadline(job.get('timeout', 0))
         source = Path(job['source']).resolve(strict=True)
         if not source.is_file():
             raise ValueError('源路径不是文件')
@@ -100,7 +101,7 @@ def main(job_path):
         elif backend == 'cad':
             intermediate = work / 'bridge.glb'
             command = [core.engines()['cad'], '-B', '-X', 'utf8', str(ROOT / 'cad_worker.py'), str(source), str(intermediate)]
-            core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
+            core.run_external(command, core.remaining_timeout(deadline), job_path.parent / 'engine.log', cwd=str(source.parent))
             import_model(intermediate)
             cad_lines = (job_path.parent / 'engine.log').read_text(encoding='utf-8', errors='replace').splitlines()
             cad_report = next((json.loads(line) for line in reversed(cad_lines) if line.startswith('{') and 'repaired_faces' in line), {})
@@ -121,7 +122,7 @@ def main(job_path):
             intermediate = work / 'bridge.glb'
             command = [core.engines()[backend], 'export', str(source), str(intermediate), '-fglb2', '-l']
             try:
-                core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
+                core.run_external(command, core.remaining_timeout(deadline), job_path.parent / 'engine.log', cwd=str(source.parent))
             except core.ConversionError as error:
                 # An unreadable input will remain unreadable with another output
                 # format. Preserve its real cause and avoid a redundant retry.
@@ -132,7 +133,7 @@ def main(job_path):
                 (work / 'bridge.glb').unlink(missing_ok=True)
                 intermediate = work / 'bridge.obj'
                 command = [core.engines()[backend], 'export', str(source), str(intermediate), '-fobj', '-ptv', '-l']
-                core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
+                core.run_external(command, core.remaining_timeout(deadline), job_path.parent / 'engine.log', cwd=str(source.parent))
                 warnings.append('GLB 中间转换失败，已使用 OBJ 恢复静态网格；该文件的动画 / 骨骼未保留。')
             if backend == 'c4d':
                 warnings.append('C4D 按编辑器可见状态转换：排除隐藏物体、隐藏图层上的物体及隐藏面；不以渲染可见性替代编辑器状态。')
@@ -150,7 +151,9 @@ def main(job_path):
                     image.pack()
                 except RuntimeError:
                     warnings.append('无法打包纹理：' + image.name)
+        core.remaining_timeout(deadline)
         export_model(output, target)
+        core.remaining_timeout(deadline)
         # Store only final exports, never proprietary intermediate scene data.
         for name in ('bridge.json', 'bridge.fbx', 'bridge.glb', 'bridge.obj', 'bridge.mtl'):
             (work / name).unlink(missing_ok=True)

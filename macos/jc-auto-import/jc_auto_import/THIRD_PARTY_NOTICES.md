@@ -4,7 +4,7 @@
 
 Source: https://github.com/nrgsille76/io_scene_max
 
-`vendor/import_max.py` is an unmodified snapshot of the upstream reader. Copyright notices are preserved in its header. Authors include Sebastian Schrand / Sebastian Sille, Jens M. Plonka and Philippe Lagadec. Source header: GPL-2.0-or-later; used here under GPL-3.0-or-later. See `vendor/MAX_IMPORTER_LICENSE`.
+`vendor/import_max.py` preserves the upstream reader logic; this macOS source copy normalizes formatting and line endings. Copyright notices are preserved in its header. Authors include Sebastian Schrand / Sebastian Sille, Jens M. Plonka and Philippe Lagadec. Source header: GPL-2.0-or-later; used here under GPL-3.0-or-later. See `vendor/MAX_IMPORTER_LICENSE`.
 
 ## Independent conversion component
 

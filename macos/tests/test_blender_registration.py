@@ -20,5 +20,10 @@ for name, folder in modules.items():
     if name == 'jc_blender_agent' and sys.platform == 'darwin':
         assert Path(module.python_exe()).is_file()
         print('BLENDER_BUNDLED_PYTHON_DISCOVERY_PASS', flush=True)
+    if name == 'jc_auto_import':
+        defaults = module.JCImportPreferences.bl_rna.properties
+        assert defaults['limit_conversion_time'].default is False
+        assert defaults['timeout'].hard_max == 604800
+        print('BLENDER_TIMEOUT_PREFERENCES_PASS', flush=True)
     module.unregister()
     print('BLENDER_REGISTER_UNREGISTER_PASS', name, flush=True)

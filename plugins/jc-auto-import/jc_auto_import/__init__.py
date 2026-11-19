@@ -11,7 +11,7 @@ from bpy.props import BoolProperty, CollectionProperty, EnumProperty, FloatPrope
 from bpy_extras.io_utils import poll_file_object_drop
 from . import core
 
-bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 4),
+bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 5),
            'blender': (4, 2, 0), 'location': 'File > Import / 3D View > Sidebar > JC',
            'description': 'Offline format conversion and import without Cinema 4D or 3ds Max',
            'category': 'Import-Export'}
@@ -49,12 +49,17 @@ def sources(operator):
 class JCImportPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
     cache_directory: StringProperty(name='转换缓存', subtype='DIR_PATH', description='留空使用 Blender 用户数据目录；不要放入模型素材目录')
-    timeout: IntProperty(name='单个文件超时（秒）', default=300, min=30, max=3600)
+    limit_conversion_time: BoolProperty(name='启用单文件总时限', default=False, description='默认不限时；大型模型可持续转换，Esc 可取消')
+    timeout: IntProperty(name='单文件总时限（秒）', default=3600, min=30, max=604800)
     def draw(self, context):
         layout = self.layout
         layout.label(text='独立离线转换 · 不调用 C4D / 3ds Max · 不上传模型', icon='CHECKMARK')
         layout.prop(self, 'cache_directory')
-        layout.prop(self, 'timeout')
+        layout.prop(self, 'limit_conversion_time')
+        row = layout.row()
+        row.enabled = self.limit_conversion_time
+        row.prop(self, 'timeout')
+        layout.label(text='默认不限转换时长 · Esc 可取消', icon='INFO')
         layout.label(text='MAX / C4D 只恢复独立读取器能够识别的数据。', icon='INFO')
         layout.operator('jc_auto_import.help', icon='HELP')
 
@@ -193,14 +198,14 @@ class JCImportConvert(bpy.types.Operator):
         self._run = Path(tempfile.mkdtemp(prefix='jc-import-'))
         _last_run = str(self._run)
         prefs = settings(context)
-        self._timeout = prefs.timeout if prefs else 300
-        self._file_started = time.monotonic()
+        self._timeout = core.conversion_timeout(prefs)
+        self._deadline = core.make_deadline(self._timeout)
         job = dict(source=self._queue[self._done], target=self.target, cache=str(self._cache),
-                   reuse=self.reuse, timeout=self._timeout)
+                   reuse=self.reuse, timeout=self._timeout, deadline=self._deadline)
         core.atomic_json(self._run / 'job.json', job)
         command = [bpy.app.binary_path, '--background', '--factory-startup', '--disable-autoexec',
                    '--python-exit-code', '1', '--python', str(core.ROOT / 'worker.py'), '--', str(self._run / 'job.json')]
-        self._process = core.spawn(command, self._run / 'worker.log')
+        self._process = core.spawn(command, self._run / 'worker.log', new_session=True)
 
     def _finish(self, context):
         global _active
@@ -237,9 +242,9 @@ class JCImportConvert(bpy.types.Operator):
             return {'PASS_THROUGH'}
         if self._window.scene != self._scene:
             return self._stop(context, '场景已切换，转换已取消。')
-        if time.monotonic() - self._file_started > self._timeout + 30:
-            self.report({'ERROR'}, '转换超时，详情见日志。')
-            return self._stop(context, '转换超时')
+        if self._deadline is not None and time.monotonic() >= self._deadline:
+            self.report({'ERROR'}, '已达到手动设置的单文件总时限，详情见日志。')
+            return self._stop(context, '已达到手动设置的单文件总时限')
         status = self._run / 'status.json'
         if status.is_file():
             try:

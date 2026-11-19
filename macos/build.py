@@ -92,6 +92,7 @@ for original in sorted(licenses.iterdir()):
 (runtime / 'runtime-files.json').write_text(json.dumps({'files': records}, indent=2) + '\n', encoding='utf-8', newline='\n')
 capabilities = json.loads((base / 'capabilities.json').read_text())
 capabilities['cad_runtime_sha256'] = hashlib.sha256((runtime / 'runtime-files.json').read_bytes()).hexdigest()
+capabilities['max_reader_sha256'] = hashlib.sha256((base / 'vendor/import_max.py').read_bytes()).hexdigest()
 (base / 'capabilities.json').write_text(json.dumps(capabilities, indent=2) + '\n', encoding='utf-8', newline='\n')
 for name, digest in records.items():
     path = runtime / name
@@ -99,7 +100,7 @@ for name, digest in records.items():
 files['bin/cad/runtime-files.json'] = runtime / 'runtime-files.json'
 for name in ('jc_converter', 'ASSIMP-LICENSE.txt', 'CINEWARE-LICENSE.txt'):
     files['bin/' + name] = base / 'bin' / name
-package('jc-auto-import', 'JC-Auto-Import-1.0.4-macOS-AppleSilicon-r2.zip', '1.0.4', 'macos.2', files)
+package('jc-auto-import', 'JC-Auto-Import-1.0.5-macOS-AppleSilicon-r3.zip', '1.0.5', 'macos.3', files)
 (OUT / 'catalog.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 (OUT / 'SHA256SUMS').write_text(''.join(p['sha256'] + '  ' + Path(p['package']).name + '\n'
                                         for p in catalog['plugins']), encoding='utf-8', newline='\n')

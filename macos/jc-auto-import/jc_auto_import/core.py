@@ -4,8 +4,11 @@ import hashlib
 import json
 import os
 import subprocess
+import time
+import math
+import signal
 
-VERSION = '1.0.4-macos.2'
+VERSION = '1.0.5-macos.3'
 EXTERNAL_EXTENSIONS = ('.c4d', '.max', '.3ds', '.3d', '.dae', '.dxf', '.lwo', '.lws', '.lxo', '.ase', '.off', '.x', '.ac', '.ms3d', '.b3d', '.3mf', '.x3d', '.md2', '.md3', '.md5mesh', '.pmx', '.ifc', '.stp', '.step', '.wrl', '.vrml', '.skp', '.dwg', '.igs', '.iges', '.sat')
 NATIVE_EXTENSIONS = ('.fbx', '.obj', '.glb', '.gltf', '.stl', '.ply', '.usd', '.usda', '.usdc', '.usdz', '.abc')
 TARGETS = {'GLB': '.glb', 'FBX': '.fbx', 'OBJ': '.obj'}
@@ -98,11 +101,11 @@ def atomic_json(path, data):
     os.replace(temporary, path)
 
 
-def spawn(command, log_path, env=None, cwd=None):
+def spawn(command, log_path, env=None, cwd=None, new_session=False):
     # No command shell, no terminal window, output goes to disk rather than a PIPE.
     with open(log_path, 'ab') as log:
         return subprocess.Popen(command, stdout=log, stderr=log, stdin=subprocess.DEVNULL,
-                                env=env, cwd=cwd, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+                                env=env, cwd=cwd, start_new_session=new_session and os.name != 'nt', creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
 
 
 def stop_process(process):
@@ -111,11 +114,18 @@ def stop_process(process):
             subprocess.run(['taskkill', '/PID', str(process.pid), '/T', '/F'],
                            capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW, timeout=15)
         else:
-            process.terminate()
+            # The background Blender owns a session; its engines inherit it.
+            if os.getpgid(process.pid) == process.pid:
+                os.killpg(process.pid, signal.SIGTERM)
+            else:
+                process.terminate()
         try:
             process.wait(timeout=5)
         except subprocess.TimeoutExpired:
-            process.kill()
+            if os.name != 'nt' and os.getpgid(process.pid) == process.pid:
+                os.killpg(process.pid, signal.SIGKILL)
+            else:
+                process.kill()
 
 
 class ConversionError(RuntimeError):
@@ -124,15 +134,36 @@ class ConversionError(RuntimeError):
         self.returncode = returncode
 
 
+def conversion_timeout(preferences):
+    # The new opt-in switch deliberately ignores old saved 300-second values.
+    return preferences.timeout if preferences and preferences.limit_conversion_time else 0
+
+
+def make_deadline(timeout):
+    timeout = float(timeout or 0)
+    if not math.isfinite(timeout) or timeout < 0:
+        raise ValueError('转换时限必须为非负有限秒数')
+    return time.monotonic() + timeout if timeout else None
+
+
+def remaining_timeout(deadline):
+    if deadline is None:
+        return None
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise ConversionError('已达到手动设置的单文件总时限。')
+    return remaining
+
+
 def run_external(command, timeout, log_path, cwd=None):
     log_path = Path(log_path)
     offset = log_path.stat().st_size if log_path.is_file() else 0
     process = spawn(command, log_path, cwd=cwd)
     try:
-        process.wait(timeout=timeout)
+        process.wait(timeout=timeout or None)
     except subprocess.TimeoutExpired:
         stop_process(process)
-        raise ConversionError('转换引擎超时，请检查源文件或增加超时。') from None
+        raise ConversionError('已达到手动设置的单文件总时限。') from None
     if process.returncode:
         with log_path.open('rb') as stream:
             stream.seek(max(offset, log_path.stat().st_size - 65536))

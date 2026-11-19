@@ -56,9 +56,10 @@ jobs:
         run: |
           python macos/build.py --full
           python macos/tests/test_macos.py
+          python scripts/test_conversion_timeout.py
       - name: Verify installed ZIP after relocation
         run: |
-          python macos/tests/test_installed_package.py --blender "$BLENDER" --fixture "$RUNNER_TEMP/jc-native-build/visibility.c4d" --archive packages/macos/JC-Auto-Import-1.0.4-macOS-AppleSilicon-r2.zip
+          python macos/tests/test_installed_package.py --blender "$BLENDER" --fixture "$RUNNER_TEMP/jc-native-build/visibility.c4d" --archive packages/macos/JC-Auto-Import-1.0.5-macOS-AppleSilicon-r3.zip
       - uses: actions/upload-artifact@v4
         if: success()
         with:
