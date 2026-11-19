@@ -1,0 +1,18 @@
+name: Test native Mac Keychain
+on:
+  push:
+    branches: [codex/macos-apple-silicon]
+    paths: [macos/tests/test_keychain.py, .github/workflows/macos-keychain.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  disposable-keychain:
+    runs-on: macos-15
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python macos/tests/test_keychain.py
