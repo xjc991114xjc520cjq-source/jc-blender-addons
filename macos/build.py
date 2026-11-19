@@ -75,6 +75,12 @@ records = json.loads((runtime / 'runtime-files.json').read_text())['files']
 for name, digest in records.items():
     path = runtime / name
     assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, name
+# The standalone Python includes pip's cross-platform launcher resources. The
+# offline converter never installs packages; omit pip/ensurepip and Windows stubs.
+records = {name: digest for name, digest in records.items()
+           if not name.startswith(('python/lib/python3.13/site-packages/pip',
+                                   'python/lib/python3.13/ensurepip/', 'python/bin/pip'))
+           and Path(name).suffix.lower() not in ('.exe', '.dll', '.pyd')}
 licenses = ROOT / 'plugins/jc-auto-import/jc_auto_import/bin/cad/licenses'
 for original in sorted(licenses.iterdir()):
     if not original.is_file():

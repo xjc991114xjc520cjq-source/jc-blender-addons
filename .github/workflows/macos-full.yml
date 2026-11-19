@@ -2,7 +2,7 @@ name: Build full Apple Silicon plugins
 on:
   push:
     branches: [codex/macos-apple-silicon]
-    paths: [macos/build_full.py, .github/workflows/macos-full.yml]
+    paths: [macos/build_full.py, macos/build.py, .github/workflows/macos-full.yml]
   workflow_dispatch:
 permissions:
   contents: read
