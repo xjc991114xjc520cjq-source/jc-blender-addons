@@ -34,3 +34,22 @@ for plugin in catalog['plugins']:
         ast.parse(script.read_text(encoding='utf-8-sig'),filename=str(script))
     print(f"PASS {plugin['id']} {plugin['version']}")
 print('All packages match the archived final source.')
+
+mac_catalog = ROOT / 'packages/macos/catalog.json'
+if mac_catalog.is_file():
+    for plugin in json.loads(mac_catalog.read_text(encoding='utf-8'))['plugins']:
+        package = ROOT / plugin['package']
+        assert package.stat().st_size == plugin['bytes'], package.name
+        assert hashlib.sha256(package.read_bytes()).hexdigest() == plugin['sha256'], package.name
+        with zipfile.ZipFile(package) as archive:
+            assert archive.testzip() is None
+            assert set(archive.namelist()) == set(plugin['sources'])
+            for name, original in plugin['sources'].items():
+                path = PurePosixPath(name)
+                assert not path.is_absolute() and '..' not in path.parts
+                assert path.suffix.lower() not in ('.exe', '.dll', '.pyd')
+                content = archive.read(name)
+                assert content == (ROOT / original).read_bytes(), name
+                if path.suffix == '.py':
+                    ast.parse(content.decode('utf-8-sig'), filename=name)
+        print(f"PASS macos {plugin['id']} {plugin['edition']}")

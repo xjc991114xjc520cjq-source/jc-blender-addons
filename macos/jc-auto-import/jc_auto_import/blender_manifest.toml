@@ -1,0 +1,14 @@
+schema_version = "1.0.0"
+id = "jc_auto_import"
+version = "1.0.4"
+name = "JC Auto Import macOS Basic"
+tagline = "Convert MAX, 3DS and native Blender formats offline"
+maintainer = "JC"
+type = "add-on"
+website = "https://github.com/xjc991114xjc520cjq-source/jc-blender-addons"
+tags = ["Import-Export"]
+blender_version_min = "4.2.0"
+license = ["SPDX:GPL-3.0-or-later"]
+platforms = ["macos-arm64"]
+[permissions]
+files = "Read models and textures; write conversion cache and logs"

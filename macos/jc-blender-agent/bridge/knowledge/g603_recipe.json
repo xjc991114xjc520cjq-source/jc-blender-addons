@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "case_id": "g603_orange_black_20261108",
+  "label": "用户已确认的橙黑鼠标爆炸图",
+  "purpose": "Reference data, not an executable preset or OEM CAD",
+  "units": {
+    "model_length_bu": 12.4,
+    "model_width_bu": 6.6,
+    "bu_to_m_approx": 0.01,
+    "color_space": "linear RGB",
+    "coordinate_space": "canonical model local coordinates; front +Y"
+  },
+  "materials": {
+    "orange_hard_shell": {
+      "base_color_linear": [
+        0.66,
+        0.086,
+        0.005
+      ],
+      "roughness_range": [
+        0.315,
+        0.375
+      ],
+      "ior": 1.47,
+      "specular_ior_level": 0.21,
+      "diffuse_roughness": 0.26,
+      "noise_scales": [
+        65,
+        160
+      ],
+      "bump_distance_bu": 0.006,
+      "bump_strength": 0.4,
+      "metallic": 0,
+      "coat_weight": 0,
+      "sss_weight": 0,
+      "transmission_weight": 0
+    },
+    "matte_keycaps": {
+      "base_color_linear": [
+        0.028,
+        0.032,
+        0.039
+      ],
+      "roughness_range": [
+        0.53,
+        0.62
+      ],
+      "ior": 1.5,
+      "specular_ior_level": 0.46,
+      "diffuse_roughness": 0.36,
+      "noise_scales": [
+        34,
+        125
+      ],
+      "bump_distance_bu": 0.014,
+      "bump_strength": 0.5,
+      "metallic": 0,
+      "coat_weight": 0,
+      "sss_weight": 0,
+      "transmission_weight": 0
+    },
+    "tpe_side_grips": {
+      "base_color_linear": [
+        0.0085,
+        0.01,
+        0.0125
+      ],
+      "roughness_range": [
+        0.64,
+        0.74
+      ],
+      "ior": 1.49,
+      "specular_ior_level": 0.4,
+      "diffuse_roughness": 0.58,
+      "noise_scales": [
+        43,
+        135
+      ],
+      "bump_distance_bu": 0.009,
+      "bump_strength": 0.38,
+      "metallic": 0,
+      "coat_weight": 0,
+      "sss_weight": 0,
+      "transmission_weight": 0,
+      "sheen_weight": 0.025
+    },
+    "wheel_rubber": {
+      "base_color_linear": [
+        0.0055,
+        0.0065,
+        0.008
+      ],
+      "roughness_range": [
+        0.55,
+        0.66
+      ],
+      "ior": 1.5,
+      "specular_ior_level": 0.37,
+      "diffuse_roughness": 0.45,
+      "noise_scales": [
+        28,
+        95
+      ],
+      "bump_distance_bu": 0.007,
+      "bump_strength": 0.32,
+      "metallic": 0,
+      "coat_weight": 0,
+      "sss_weight": 0,
+      "transmission_weight": 0
+    },
+    "rigid_pc_abs_frame": {
+      "base_color_linear": [
+        0.017,
+        0.02,
+        0.026
+      ],
+      "roughness_range": [
+        0.29,
+        0.34
+      ],
+      "ior": 1.52,
+      "specular_ior_level": 0.48,
+      "diffuse_roughness": 0.1,
+      "noise_scales": [
+        100
+      ],
+      "bump_distance_bu": 0.0016,
+      "bump_strength": 0.16,
+      "metallic": 0,
+      "coat_weight": 0,
+      "sss_weight": 0,
+      "transmission_weight": 0
+    },
+    "lower_structural_shell": {
+      "base_color_linear": [
+        0.014,
+        0.017,
+        0.022
+      ],
+      "roughness_range": [
+        0.41,
+        0.47
+      ],
+      "ior": 1.52,
+      "specular_ior_level": 0.44,
+      "diffuse_roughness": 0.25,
+      "noise_scales": [
+        67
+      ],
+      "bump_distance_bu": 0.0027,
+      "bump_strength": 0.25,
+      "metallic": 0,
+      "coat_weight": 0,
+      "sss_weight": 0,
+      "transmission_weight": 0
+    }
+  },
+  "layer_z_offsets": {
+    "lower_housing": 2.5,
+    "main_pcb": 5.7,
+    "wheel_click_boards_aa_cradle": 8.2,
+    "side_grips_midframe": 11.8,
+    "orange_cover": 16.0
+  },
+  "camera": {
+    "lens_mm": 85,
+    "sensor_width_mm": 36,
+    "sensor_fit": "HORIZONTAL",
+    "target": [
+      0,
+      0,
+      10
+    ],
+    "direction_normalize": [
+      -0.78,
+      0.5,
+      0.38
+    ],
+    "horizontal_framing_width_bu": 21.3
+  },
+  "lights": [
+    {
+      "name": "shaped_key",
+      "type": "AREA",
+      "location": [
+        -13,
+        8,
+        26
+      ],
+      "target": [
+        0,
+        0,
+        12
+      ],
+      "power_w": 2450,
+      "size_bu": [
+        3.5,
+        17
+      ],
+      "color_linear": [
+        1,
+        0.96,
+        0.89
+      ]
+    },
+    {
+      "name": "narrow_separation",
+      "type": "AREA",
+      "location": [
+        11,
+        -6,
+        12
+      ],
+      "target": [
+        0,
+        0,
+        12
+      ],
+      "power_w": 1850,
+      "size_bu": [
+        1.4,
+        17
+      ],
+      "color_linear": [
+        0.86,
+        0.93,
+        1
+      ],
+      "specular_factor": 0.48
+    },
+    {
+      "name": "low_front_rake",
+      "type": "AREA",
+      "location": [
+        -10,
+        12,
+        9
+      ],
+      "target": [
+        0,
+        0,
+        9
+      ],
+      "power_w": 1150,
+      "size_bu": [
+        3,
+        12
+      ],
+      "color_linear": [
+        1,
+        0.96,
+        0.91
+      ]
+    },
+    {
+      "name": "weak_fill",
+      "type": "AREA",
+      "location": [
+        4,
+        14,
+        16
+      ],
+      "target": [
+        0,
+        0,
+        10
+      ],
+      "power_w": 550,
+      "size_bu": [
+        10,
+        15
+      ],
+      "color_linear": [
+        0.91,
+        0.94,
+        1
+      ]
+    },
+    {
+      "name": "side_grip_rake",
+      "type": "AREA",
+      "location": [
+        -10,
+        3,
+        14
+      ],
+      "target": [
+        -2,
+        0,
+        13.4
+      ],
+      "power_w": 460,
+      "size_bu": [
+        0.9,
+        8
+      ],
+      "color_linear": [
+        0.96,
+        0.98,
+        1
+      ]
+    }
+  ],
+  "color_management": {
+    "view_transform": "AgX",
+    "look": "AgX - Medium High Contrast",
+    "exposure": 0.1
+  },
+  "output": {
+    "width": 3000,
+    "height": 4000,
+    "format": "PNG",
+    "bit_depth": 16,
+    "cycles_max_samples": 1024,
+    "adaptive_threshold": 0.005,
+    "denoise": true
+  },
+  "assets": {
+    "approved_preview": "g603_approved_preview.png"
+  },
+  "limitations": [
+    "Adapt coordinate scale, lighting power and microtexture to the actual model.",
+    "Do not invent G603 lithium pouch, charging port or spoked wheel.",
+    "Internals are illustrative, not OEM engineering CAD.",
+    "This database does not include the original mouse mesh or .blend."
+  ],
+  "environment": {
+    "optional_builtin_hdri": "studio.exr",
+    "strength": 0.11,
+    "rotation_z_radians": 2.35,
+    "packed_in_original_project": true
+  },
+  "background": {
+    "type": "continuous curved charcoal cyclorama",
+    "bend_start_bu": 8,
+    "radius_bu": 12,
+    "floor_z": -1.2,
+    "halo_spot_power_w": 9000,
+    "halo_angle_degrees": 76,
+    "halo_blend": 0.93,
+    "note": "Adapt geometry and spotlight to the new camera; no volumetric blanket."
+  }
+}

@@ -1,5 +1,12 @@
 # JC Blender 小插件合集
 
+## macOS / Apple Silicon（M 系列）
+
+新增四类插件的 [Mac 安装包与适配说明](macos/README.md)，下载目录为 [packages/macos](packages/macos)。
+Agent 以用户提供的 0.1.5 为基线，已核对与仓库原 ZIP 完全一致。
+自动导入提供 **Mac 基础版**：MAX、3DS 和 Blender 原生格式；C4D、STEP 及依赖 Assimp 的格式暂不支持。
+当前完成 Windows 上的共享逻辑回归检查，**Mac 实机验收待完成**。
+
 保存当前定稿的 Blender 小插件：可直接安装的 ZIP、对应源码、中文说明和校验值。
 
 ## 当前最终版
