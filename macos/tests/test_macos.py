@@ -59,6 +59,7 @@ class MacTests(unittest.TestCase):
             folder = binary.parent.parent / 'Resources/5.2/python/bin'
             folder.mkdir(parents=True)
             candidate = folder / 'python3.13'; candidate.touch()
+            candidate = candidate.resolve()  # /var is a /private/var symlink on macOS.
             with patch.object(mac_platform, 'executable', side_effect=lambda p: p == candidate), \
                  patch.object(mac_platform.subprocess, 'run') as run:
                 run.return_value.returncode = 0

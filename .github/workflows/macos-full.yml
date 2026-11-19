@@ -2,7 +2,7 @@ name: Build full Apple Silicon plugins
 on:
   push:
     branches: [codex/macos-apple-silicon]
-    paths: [macos/build_full.py, macos/build.py, .github/workflows/macos-full.yml]
+    paths: [macos/**/*.py, .github/workflows/macos-full.yml, plugins/jc-auto-import/engine/assimp-jc.patch]
   workflow_dispatch:
 permissions:
   contents: read
