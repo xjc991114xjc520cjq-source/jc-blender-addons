@@ -32,7 +32,7 @@ jobs:
       - name: Package full macOS builds
         run: python macos/build.py --full
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
           name: macos-full-native
           path: |

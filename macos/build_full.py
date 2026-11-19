@@ -37,7 +37,9 @@ if sys.platform != 'darwin' or platform.machine() != 'arm64':
 for name, url, digest in DOWNLOADS:
     path = TEMP / name
     if not path.is_file():
-        print('Downloading', name, flush=True); urllib.request.urlretrieve(url, path)
+        print('Downloading', name, flush=True)
+        run('curl', '--fail', '--location', '--retry', '3', '--user-agent',
+            'Mozilla/5.0 (compatible; JC-Blender-Build)', url, '--output', path)
     if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
         raise RuntimeError('Download hash mismatch: ' + name)
 
