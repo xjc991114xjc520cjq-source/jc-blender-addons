@@ -1,0 +1,87 @@
+{
+  "updated": "2026-11-19",
+  "platform": "macos-arm64",
+  "validation": "Windows regression checks only; Mac hardware acceptance pending",
+  "plugins": [
+    {
+      "id": "jc-blender-agent",
+      "version": "0.1.5",
+      "edition": "macos.1",
+      "package": "packages/macos/JC-Blender-Agent-0.1.5-macOS-AppleSilicon-r1.zip",
+      "bytes": 288878,
+      "sha256": "73c2d6d13eb680480b32c3eddf83b4cedd73ea04e38a01431a8a94a5e2f8b94e",
+      "sources": {
+        "jc_blender_agent/LICENSE": "macos/jc-blender-agent/LICENSE",
+        "jc_blender_agent/README.md": "macos/README.md",
+        "jc_blender_agent/__init__.py": "macos/jc-blender-agent/addon/jc_blender_agent/__init__.py",
+        "jc_blender_agent/runtime/bridge/__init__.py": "macos/jc-blender-agent/bridge/__init__.py",
+        "jc_blender_agent/runtime/bridge/agents.py": "macos/jc-blender-agent/bridge/agents.py",
+        "jc_blender_agent/runtime/bridge/attachments.py": "macos/jc-blender-agent/bridge/attachments.py",
+        "jc_blender_agent/runtime/bridge/broker.py": "macos/jc-blender-agent/bridge/broker.py",
+        "jc_blender_agent/runtime/bridge/common.py": "macos/jc-blender-agent/bridge/common.py",
+        "jc_blender_agent/runtime/bridge/knowledge/g603_approved_case_zh.md": "macos/jc-blender-agent/bridge/knowledge/g603_approved_case_zh.md",
+        "jc_blender_agent/runtime/bridge/knowledge/g603_approved_preview.png": "macos/jc-blender-agent/bridge/knowledge/g603_approved_preview.png",
+        "jc_blender_agent/runtime/bridge/knowledge/g603_recipe.json": "macos/jc-blender-agent/bridge/knowledge/g603_recipe.json",
+        "jc_blender_agent/runtime/bridge/knowledge/product_rendering_zh.md": "macos/jc-blender-agent/bridge/knowledge/product_rendering_zh.md",
+        "jc_blender_agent/runtime/bridge/local_api.py": "macos/jc-blender-agent/bridge/local_api.py",
+        "jc_blender_agent/runtime/bridge/mac_keychain.py": "macos/jc-blender-agent/bridge/mac_keychain.py",
+        "jc_blender_agent/runtime/bridge/mac_platform.py": "macos/jc-blender-agent/bridge/mac_platform.py",
+        "jc_blender_agent/runtime/bridge/mcp_server.py": "macos/jc-blender-agent/bridge/mcp_server.py",
+        "jc_blender_agent/runtime/bridge/media_worker.py": "macos/jc-blender-agent/bridge/media_worker.py",
+        "jc_blender_agent/runtime/bridge/render_guidance.py": "macos/jc-blender-agent/bridge/render_guidance.py"
+      }
+    },
+    {
+      "id": "jc-history",
+      "version": "1.0.1",
+      "edition": "macos.1",
+      "package": "packages/macos/JC-History-1.0.1-macOS-AppleSilicon-r1.zip",
+      "bytes": 24733,
+      "sha256": "a84a8fc710adff3f899ad7fcda4f76193dfd23022f9a4438d9415d7997fd1711",
+      "sources": {
+        "LICENSE.txt": "plugins/jc-history/src/jc_history/LICENSE.txt",
+        "__init__.py": "plugins/jc-history/src/jc_history/__init__.py",
+        "blender_manifest.toml": "plugins/jc-history/src/jc_history/blender_manifest.toml",
+        "macOS说明.md": "macos/README.md",
+        "selection.py": "plugins/jc-history/src/jc_history/selection.py",
+        "storage.py": "plugins/jc-history/src/jc_history/storage.py"
+      }
+    },
+    {
+      "id": "jc-view-navigator",
+      "version": "1.1.0",
+      "edition": "macos.1",
+      "package": "packages/macos/JC-View-Navigator-1.1.0-macOS-AppleSilicon-r1.zip",
+      "bytes": 20493,
+      "sha256": "4f0f8aa0eae97e410099765c6e00d2047bc7d9492535418f778daaa7294acafe",
+      "sources": {
+        "jc_view_navigator/LICENSE.txt": "plugins/jc-view-navigator/jc_view_navigator/LICENSE.txt",
+        "jc_view_navigator/__init__.py": "plugins/jc-view-navigator/jc_view_navigator/__init__.py",
+        "jc_view_navigator/macOS说明.md": "macos/README.md",
+        "jc_view_navigator/使用说明.md": "plugins/jc-view-navigator/jc_view_navigator/使用说明.md"
+      }
+    },
+    {
+      "id": "jc-auto-import",
+      "version": "1.0.4",
+      "edition": "macos-basic.1",
+      "package": "packages/macos/JC-Auto-Import-1.0.4-macOS-AppleSilicon-Basic-r1.zip",
+      "bytes": 55616,
+      "sha256": "6abb04759f4a2873bc96f715eda92a0c7ccfd367dfd2bb434c04eace81523823",
+      "sources": {
+        "LICENSE.txt": "macos/jc-auto-import/jc_auto_import/LICENSE.txt",
+        "THIRD_PARTY_NOTICES.md": "macos/jc-auto-import/jc_auto_import/THIRD_PARTY_NOTICES.md",
+        "__init__.py": "macos/jc-auto-import/jc_auto_import/__init__.py",
+        "blender_manifest.toml": "macos/jc-auto-import/jc_auto_import/blender_manifest.toml",
+        "capabilities.json": "macos/jc-auto-import/jc_auto_import/capabilities.json",
+        "core.py": "macos/jc-auto-import/jc_auto_import/core.py",
+        "three_ds.py": "macos/jc-auto-import/jc_auto_import/three_ds.py",
+        "vendor/MAX_IMPORTER_LICENSE": "macos/jc-auto-import/jc_auto_import/vendor/MAX_IMPORTER_LICENSE",
+        "vendor/__init__.py": "macos/jc-auto-import/jc_auto_import/vendor/__init__.py",
+        "vendor/import_max.py": "macos/jc-auto-import/jc_auto_import/vendor/import_max.py",
+        "worker.py": "macos/jc-auto-import/jc_auto_import/worker.py",
+        "使用说明.md": "macos/README.md"
+      }
+    }
+  ]
+}
