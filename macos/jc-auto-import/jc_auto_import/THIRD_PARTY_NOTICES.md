@@ -17,4 +17,4 @@ The Python add-on license does not relicense Maxon Cineware. Source and rebuild 
 
 ## Independent CAD runtime (1.0.3)
 
-STEP uses a bundled arm64 CPython + CadQuery OCP/Open CASCADE process, not the Assimp IFC reader. See `bin/cad/NOTICE.md`, the Python distribution licenses and the wheel dist-info license directories for component licenses, sources and redistribution notices. The Python add-on license does not replace these component licenses.
+STEP uses a bundled arm64 CPython + CadQuery OCP/Open CASCADE process, not the Assimp IFC reader. See `bin/cad/NOTICE.md`, `bin/cad/licenses/`, and the Python distribution licenses for component licenses, sources and redistribution notices. The Python add-on license does not replace these component licenses.

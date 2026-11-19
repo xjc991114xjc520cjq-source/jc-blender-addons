@@ -5,6 +5,7 @@ import hashlib
 import json
 import zipfile
 import sys
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'packages/macos'
@@ -74,6 +75,20 @@ records = json.loads((runtime / 'runtime-files.json').read_text())['files']
 for name, digest in records.items():
     path = runtime / name
     assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, name
+licenses = ROOT / 'plugins/jc-auto-import/jc_auto_import/bin/cad/licenses'
+for original in sorted(licenses.iterdir()):
+    if not original.is_file():
+        continue
+    target = runtime / 'licenses' / original.name
+    target.parent.mkdir(exist_ok=True)
+    shutil.copy2(original, target)
+    records['licenses/' + original.name] = hashlib.sha256(target.read_bytes()).hexdigest()
+(runtime / 'runtime-files.json').write_text(json.dumps({'files': records}, indent=2) + '\n', encoding='utf-8', newline='\n')
+capabilities = json.loads((base / 'capabilities.json').read_text())
+capabilities['cad_runtime_sha256'] = hashlib.sha256((runtime / 'runtime-files.json').read_bytes()).hexdigest()
+(base / 'capabilities.json').write_text(json.dumps(capabilities, indent=2) + '\n', encoding='utf-8', newline='\n')
+for name, digest in records.items():
+    path = runtime / name
     files['bin/cad/' + name] = path
 files['bin/cad/runtime-files.json'] = runtime / 'runtime-files.json'
 for name in ('jc_converter', 'ASSIMP-LICENSE.txt', 'CINEWARE-LICENSE.txt'):

@@ -17,5 +17,8 @@ for name, folder in modules.items():
     module = importlib.util.module_from_spec(spec); sys.modules[name] = module
     spec.loader.exec_module(module)
     module.register()
+    if name == 'jc_blender_agent' and sys.platform == 'darwin':
+        assert Path(module.python_exe()).is_file()
+        print('BLENDER_BUNDLED_PYTHON_DISCOVERY_PASS', flush=True)
     module.unregister()
     print('BLENDER_REGISTER_UNREGISTER_PASS', name, flush=True)
