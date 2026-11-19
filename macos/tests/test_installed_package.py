@@ -17,8 +17,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[2]
 SAMPLES = {
     'SourceFiles/RotatingCube.max': 'bdc6170e0c76a2b362102e21816d175a86cfc6f251f065223c83717baa4040c4',
-    'Collada/box_nested_animation.dae': 'f54e89c9d6e24457e43db81c96b324feb46a1ee6a7c40de155d6e16762c8f852',
-    'DXF/PinkEggFromLW.dxf': 'b6563488946eaa478ead74cdc753d537af052dde9b9623c807ab5f51318c1300',
+    'Collada/box_nested_animation.dae': '669b797dd5784e4e5dcd9ae9067e0b2f06161a813f8a08b6a7ed78d0d8d1534f',
+    'DXF/PinkEggFromLW.dxf': '65734e4d5772274f1f3bf419fc1238565495ab9e7974edf801fd561c24469d39',
     'LWO/LWO2/boxuv.lwo': 'a2e2f7aba857df5c88bf0116a0189eb0acac451cd7e72740cb82c16a9c6f184b',
     '3MF/box.3mf': 'de20508dff06f8faf8ca992c00238d4affc916ba4b812e8ff9ec1571fec533a1',
 }
