@@ -68,7 +68,8 @@ cpp.write_text(t)
 build = TEMP / 'assimp-build'
 run('cmake', '-S', assimp, '-B', build, '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_OSX_ARCHITECTURES=arm64',
     '-DCMAKE_OSX_DEPLOYMENT_TARGET=11.0', '-DASSIMP_BUILD_TESTS=OFF', '-DASSIMP_BUILD_ASSIMP_TOOLS=ON',
-    '-DASSIMP_BUILD_SAMPLES=OFF', '-DBUILD_SHARED_LIBS=OFF', '-DASSIMP_BUILD_ZLIB=ON', '-DASSIMP_INSTALL=OFF',
+    '-DASSIMP_BUILD_SAMPLES=OFF', '-DBUILD_SHARED_LIBS=OFF', '-DASSIMP_BUILD_ZLIB=OFF', '-DASSIMP_INSTALL=OFF',
+    '-DCMAKE_EXE_LINKER_FLAGS=-framework AppKit -framework CoreFoundation -framework CoreAudio',
     '-DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT=ON', '-DASSIMP_BUILD_NONFREE_C4D_IMPORTER=ON',
     '-DASSIMP_BUILD_ALL_EXPORTERS_BY_DEFAULT=OFF', '-DASSIMP_BUILD_GLTF_EXPORTER=ON',
     '-DASSIMP_BUILD_OBJ_EXPORTER=ON', '-DASSIMP_BUILD_ASSBIN_EXPORTER=ON', '-DASSIMP_BUILD_ASSXML_EXPORTER=ON',
@@ -116,6 +117,6 @@ fixture = TEMP / 'fixture'
 run('clang++', '-std=c++17', '-arch', 'arm64', '-D__MAC', '-D__C4D_64BIT',
     '-I' + str(sdk / 'includes'), ROOT / 'plugins/jc-auto-import/engine/tests/fixture.cpp',
     sdk / 'libraries/osx/release/libcinewarelib.a', sdk / 'libraries/osx/release/libjpeglib.a',
-    '-framework', 'Cocoa', '-o', fixture)
+    '-framework', 'AppKit', '-framework', 'CoreFoundation', '-framework', 'CoreAudio', '-o', fixture)
 run(fixture, TEMP / 'visibility.c4d')
 print('NATIVE_ENGINES_BUILT', flush=True)
