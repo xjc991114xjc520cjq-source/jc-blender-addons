@@ -43,13 +43,17 @@ if mac_catalog.is_file():
         assert hashlib.sha256(package.read_bytes()).hexdigest() == plugin['sha256'], package.name
         with zipfile.ZipFile(package) as archive:
             assert archive.testzip() is None
-            assert set(archive.namelist()) == set(plugin['sources'])
-            for name, original in plugin['sources'].items():
+            digests = plugin.get('files_sha256')
+            assert set(archive.namelist()) == set(digests or plugin['sources'])
+            for name in archive.namelist():
                 path = PurePosixPath(name)
                 assert not path.is_absolute() and '..' not in path.parts
                 assert path.suffix.lower() not in ('.exe', '.dll', '.pyd')
                 content = archive.read(name)
-                assert content == (ROOT / original).read_bytes(), name
+                if digests:
+                    assert hashlib.sha256(content).hexdigest() == digests[name], name
+                if name in plugin['sources']:
+                    assert content == (ROOT / plugin['sources'][name]).read_bytes(), name
                 if path.suffix == '.py':
                     ast.parse(content.decode('utf-8-sig'), filename=name)
         print(f"PASS macos {plugin['id']} {plugin['edition']}")

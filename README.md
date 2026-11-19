@@ -4,8 +4,8 @@
 
 新增四类插件的 [Mac 安装包与适配说明](macos/README.md)，下载目录为 [packages/macos](packages/macos)。
 Agent 以用户提供的 0.1.5 为基线，已核对与仓库原 ZIP 完全一致。
-自动导入提供 **Mac 基础版**：MAX、3DS 和 Blender 原生格式；C4D、STEP 及依赖 Assimp 的格式暂不支持。
-当前完成 Windows 上的共享逻辑回归检查，**Mac 实机验收待完成**。
+自动导入完整适配与 Windows 相同的 MAX、C4D、STEP、Assimp 和 Blender 原生格式读取路线，使用 ARM64 转换组件。
+自动构建与验收结果见 [Mac 验证记录](macos/VALIDATION.md)，用户自己的 Mac 界面验收仍待完成。
 
 保存当前定稿的 Blender 小插件：可直接安装的 ZIP、对应源码、中文说明和校验值。
 

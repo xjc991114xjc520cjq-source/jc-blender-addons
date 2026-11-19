@@ -8,7 +8,7 @@ Source: https://github.com/nrgsille76/io_scene_max
 
 ## Independent conversion component
 
-`bin/jc_converter.exe` is a separate command-line program invoked as a subprocess. It is not linked into Blender or into the GPL Python importer.
+`bin/jc_converter` is a native macOS arm64 command-line program invoked as a subprocess. It is not linked into Blender or into the GPL Python importer.
 
 - Assimp v6.0.5, commit `392a658f9c271be965271f45e7521a1b80ea4392`; BSD-3-Clause and bundled third-party notices in `bin/ASSIMP-LICENSE.txt`.
 - Maxon Cineware SDK S22.008: compiled static library integrated into this conversion component. Maxon retains its rights. See `bin/CINEWARE-LICENSE.txt` and https://developers.maxon.net/downloads/. The SDK source archive, static library files, programming examples and documentation are not distributed in this package.
@@ -17,4 +17,4 @@ The Python add-on license does not relicense Maxon Cineware. Source and rebuild 
 
 ## Independent CAD runtime (1.0.3)
 
-STEP uses a bundled CPython + CadQuery OCP/Open CASCADE process, not the Assimp IFC reader. See `bin/cad/NOTICE.md`, `bin/cad/licenses/` and `bin/cad/LICENSE.txt` for component licenses, sources and redistribution notices. The Python add-on license does not replace these component licenses.
+STEP uses a bundled arm64 CPython + CadQuery OCP/Open CASCADE process, not the Assimp IFC reader. See `bin/cad/NOTICE.md`, the Python distribution licenses and the wheel dist-info license directories for component licenses, sources and redistribution notices. The Python add-on license does not replace these component licenses.

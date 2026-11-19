@@ -11,11 +11,12 @@ OUT = ROOT / 'packages/macos'
 OUT.mkdir(parents=True, exist_ok=True)
 FULL = '--full' in sys.argv
 catalog = {'updated': '2026-11-19', 'platform': 'macos-arm64',
-           'validation': 'Windows regression checks only; Mac hardware acceptance pending', 'plugins': []}
+           'validation': 'See macos/VALIDATION.md for native arm64 CI and remaining interactive acceptance', 'plugins': []}
 
 
 def package(pid, name, version, edition, files):
     records = {}
+    digests = {}
     archive = OUT / name
     with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for arcname, source in sorted(files.items()):
@@ -25,14 +26,17 @@ def package(pid, name, version, edition, files):
             assert source.suffix.lower() not in ('.exe', '.dll', '.pyd'), source
             info = zipfile.ZipInfo(arcname, date_time=(2026, 11, 19, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = (0o100755 if source.stat().st_mode & 0o111 else 0o100644) << 16
+            needs_exec = arcname == 'bin/jc_converter' or arcname.startswith('bin/cad/python/bin/')
+            info.external_attr = (0o100755 if needs_exec else 0o100644) << 16
             z.writestr(info, content)
-            records[arcname] = source.relative_to(ROOT).as_posix()
+            digests[arcname] = hashlib.sha256(content).hexdigest()
+            if not arcname.startswith('bin/'):
+                records[arcname] = source.relative_to(ROOT).as_posix()
     with zipfile.ZipFile(archive) as z:
         assert z.testzip() is None
     catalog['plugins'].append({'id': pid, 'version': version, 'edition': edition,
         'package': archive.relative_to(ROOT).as_posix(), 'bytes': archive.stat().st_size,
-        'sha256': hashlib.sha256(archive.read_bytes()).hexdigest(), 'sources': records})
+        'sha256': hashlib.sha256(archive.read_bytes()).hexdigest(), 'sources': records, 'files_sha256': digests})
     print(name)
 
 
@@ -44,17 +48,17 @@ for source in sorted((base / 'bridge').glob('*.py')):
 for source in sorted((base / 'bridge/knowledge').iterdir()):
     if source.suffix in ('.md', '.json', '.png'):
         files['jc_blender_agent/runtime/bridge/knowledge/' + source.name] = source
-package('jc-blender-agent', 'JC-Blender-Agent-0.1.5-macOS-AppleSilicon-r1.zip', '0.1.5', 'macos.1', files)
+package('jc-blender-agent', 'JC-Blender-Agent-0.1.5-macOS-AppleSilicon-r2.zip', '0.1.5', 'macos.2', files)
 
 base = ROOT / 'plugins/jc-history/src/jc_history'
 files = {p.name: p for p in base.iterdir() if p.suffix in ('.py', '.toml', '.txt')}
 files['macOS说明.md'] = ROOT / 'macos/README.md'
-package('jc-history', 'JC-History-1.0.1-macOS-AppleSilicon-r1.zip', '1.0.1', 'macos.1', files)
+package('jc-history', 'JC-History-1.0.1-macOS-AppleSilicon-r2.zip', '1.0.1', 'macos.2', files)
 
 base = ROOT / 'plugins/jc-view-navigator/jc_view_navigator'
 files = {'jc_view_navigator/' + name: base / name for name in ('__init__.py', '使用说明.md', 'LICENSE.txt')}
 files['jc_view_navigator/macOS说明.md'] = ROOT / 'macos/README.md'
-package('jc-view-navigator', 'JC-View-Navigator-1.1.0-macOS-AppleSilicon-r1.zip', '1.1.0', 'macos.1', files)
+package('jc-view-navigator', 'JC-View-Navigator-1.1.0-macOS-AppleSilicon-r2.zip', '1.1.0', 'macos.2', files)
 
 base = ROOT / 'macos/jc-auto-import/jc_auto_import'
 names = ['__init__.py', 'core.py', 'worker.py', 'three_ds.py', 'blender_manifest.toml',

@@ -83,7 +83,10 @@ class MacTests(unittest.TestCase):
                 for name in z.namelist():
                     self.assertNotIn('..', Path(name).parts)
                     self.assertNotIn(Path(name).suffix.lower(), ('.exe', '.dll', '.pyd'))
-                    self.assertEqual(z.read(name), (ROOT / item['sources'][name]).read_bytes())
+                    if 'files_sha256' in item:
+                        self.assertEqual(hashlib.sha256(z.read(name)).hexdigest(), item['files_sha256'][name])
+                    if name in item['sources']:
+                        self.assertEqual(z.read(name), (ROOT / item['sources'][name]).read_bytes())
 
 
 if __name__ == '__main__':
