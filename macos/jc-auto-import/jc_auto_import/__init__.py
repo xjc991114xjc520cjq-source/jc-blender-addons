@@ -11,13 +11,13 @@ from bpy.props import BoolProperty, CollectionProperty, EnumProperty, FloatPrope
 from bpy_extras.io_utils import poll_file_object_drop
 from . import core
 
-bl_info = {'name': 'JC 自动转换导入 Mac 基础版', 'author': 'JC', 'version': (1, 0, 4),
+bl_info = {'name': 'JC 自动转换导入', 'author': 'JC', 'version': (1, 0, 4),
            'blender': (4, 2, 0), 'location': 'File > Import / 3D View > Sidebar > JC',
            'description': 'Offline format conversion and import without Cinema 4D or 3ds Max',
            'category': 'Import-Export'}
 
 _active = None
-_message = 'Mac 基础版 · MAX / 3DS / Blender 原生格式'
+_message = '就绪 · 无需安装原软件'
 _last_run = ''
 _last_output = ''
 
@@ -55,7 +55,7 @@ class JCImportPreferences(bpy.types.AddonPreferences):
         layout.label(text='独立离线转换 · 不调用 C4D / 3ds Max · 不上传模型', icon='CHECKMARK')
         layout.prop(self, 'cache_directory')
         layout.prop(self, 'timeout')
-        layout.label(text='Mac 基础版：C4D / STEP / Assimp 格式暂不支持。', icon='INFO')
+        layout.label(text='MAX / C4D 只恢复独立读取器能够识别的数据。', icon='INFO')
         layout.operator('jc_auto_import.help', icon='HELP')
 
 
@@ -66,12 +66,12 @@ class JCImportHelp(bpy.types.Operator):
         return context.window_manager.invoke_popup(self, width=520)
     def draw(self, context):
         layout = self.layout
-        for line in ('将模型拖入三维视图，或使用「文件 → 导入 → JC 自动转换导入 Mac 基础版」。',
+        for line in ('将模型拖入三维视图，或使用「文件 → 导入 → JC 自动转换导入」。',
                      'GLB：适合基础 PBR 材质；FBX：适合层级与可恢复的动画；OBJ：静态网格。',
                      'MAX：支持部分网格、基本体、材质与 UV，不计算原软件修改器。',
-                     'Mac 基础版暂不支持 C4D、STEP、DAE、DXF、LWO、3MF 等格式。',
-                     '支持 MAX、3DS 及 Blender 原生 FBX / OBJ / glTF / STL / PLY / USD / ABC。',
-                     '未捆绑 Windows 转换程序；无需 Rosetta 或另外安装 Python。',
+                     'C4D：读取已保存的网格及缓存；不能重新计算 MoGraph / 生成器。',
+                     'C4D 按编辑器可见状态转换，隐藏的备用件和面不导入。',
+                     'STP / STEP：独立 CAD 曲面网格化，保留可恢复的装配与颜色。',
                      'DWG / SKP / IGES 等没有内置读取器的格式会明确提示，不调用原软件。',
                      '转换在后台运行，可在右侧 JC 面板取消；已导入的文件可用原生撤销。',
                      '转换缓存保留纹理，源文件不修改；模型不会上传网络。'):
@@ -83,7 +83,7 @@ class JCImportHelp(bpy.types.Operator):
 class JCImportChoose(bpy.types.Operator):
     """选择需要转换的模型文件"""
     bl_idname = 'jc_auto_import.choose'
-    bl_label = 'JC 自动转换导入 Mac 基础版'
+    bl_label = 'JC 自动转换导入'
     filepath: StringProperty(subtype='FILE_PATH', options={'SKIP_SAVE'})
     directory: StringProperty(subtype='DIR_PATH', options={'SKIP_SAVE'})
     files: CollectionProperty(type=bpy.types.OperatorFileListElement, options={'SKIP_SAVE'})
@@ -123,7 +123,7 @@ class JCImportConvert(bpy.types.Operator):
             return {'CANCELLED'}
         if not sources(self):
             return bpy.ops.jc_auto_import.choose('INVOKE_DEFAULT')
-        return context.window_manager.invoke_props_dialog(self, width=510, title='JC 自动转换导入 Mac 基础版', confirm_text='转换并导入')
+        return context.window_manager.invoke_props_dialog(self, width=510, title='JC 自动转换导入', confirm_text='转换并导入')
 
     def draw(self, context):
         layout = self.layout
@@ -355,7 +355,7 @@ class JCImportPanel(bpy.types.Panel):
 
 class JCImportFileHandler(bpy.types.FileHandler):
     bl_idname = 'JC_FH_auto_import'
-    bl_label = 'JC 自动转换导入 Mac 基础版'
+    bl_label = 'JC 自动转换导入'
     bl_import_operator = 'jc_auto_import.convert'
     bl_file_extensions = ';'.join(core.external_extensions())
     @classmethod
@@ -368,7 +368,7 @@ _classes = (JCImportPreferences, JCImportHelp, JCImportChoose, JCImportConvert, 
 
 
 def menu(self, context):
-    self.layout.operator(JCImportChoose.bl_idname, text='JC 自动转换导入 Mac 基础版', icon='IMPORT')
+    self.layout.operator(JCImportChoose.bl_idname, text='JC 自动转换导入', icon='IMPORT')
 
 
 @bpy.app.handlers.persistent

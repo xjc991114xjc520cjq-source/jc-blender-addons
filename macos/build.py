@@ -4,10 +4,12 @@ import ast
 import hashlib
 import json
 import zipfile
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'packages/macos'
 OUT.mkdir(parents=True, exist_ok=True)
+FULL = '--full' in sys.argv
 catalog = {'updated': '2026-11-19', 'platform': 'macos-arm64',
            'validation': 'Windows regression checks only; Mac hardware acceptance pending', 'plugins': []}
 
@@ -23,7 +25,7 @@ def package(pid, name, version, edition, files):
             assert source.suffix.lower() not in ('.exe', '.dll', '.pyd'), source
             info = zipfile.ZipInfo(arcname, date_time=(2026, 11, 19, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o100644 << 16
+            info.external_attr = (0o100755 if source.stat().st_mode & 0o111 else 0o100644) << 16
             z.writestr(info, content)
             records[arcname] = source.relative_to(ROOT).as_posix()
     with zipfile.ZipFile(archive) as z:
@@ -60,7 +62,19 @@ names = ['__init__.py', 'core.py', 'worker.py', 'three_ds.py', 'blender_manifest
          'vendor/__init__.py', 'vendor/import_max.py', 'vendor/MAX_IMPORTER_LICENSE']
 files = {name: base / name for name in names}
 files['使用说明.md'] = ROOT / 'macos/README.md'
-package('jc-auto-import', 'JC-Auto-Import-1.0.4-macOS-AppleSilicon-Basic-r1.zip', '1.0.4', 'macos-basic.1', files)
+if not FULL:
+    raise RuntimeError('Full Mac engines required. Build with python macos/build_full.py then python macos/build.py --full')
+files['cad_worker.py'] = base / 'cad_worker.py'
+runtime = base / 'bin/cad'
+records = json.loads((runtime / 'runtime-files.json').read_text())['files']
+for name, digest in records.items():
+    path = runtime / name
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, name
+    files['bin/cad/' + name] = path
+files['bin/cad/runtime-files.json'] = runtime / 'runtime-files.json'
+for name in ('jc_converter', 'ASSIMP-LICENSE.txt', 'CINEWARE-LICENSE.txt'):
+    files['bin/' + name] = base / 'bin' / name
+package('jc-auto-import', 'JC-Auto-Import-1.0.4-macOS-AppleSilicon-r2.zip', '1.0.4', 'macos.2', files)
 (OUT / 'catalog.json').write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n', encoding='utf-8', newline='\n')
 (OUT / 'SHA256SUMS').write_text(''.join(p['sha256'] + '  ' + Path(p['package']).name + '\n'
                                         for p in catalog['plugins']), encoding='utf-8', newline='\n')

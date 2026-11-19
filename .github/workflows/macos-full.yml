@@ -1,0 +1,40 @@
+name: Build full Apple Silicon plugins
+on:
+  push:
+    branches: [codex/macos-apple-silicon]
+    paths: [macos/build_full.py, .github/workflows/macos-full.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-macos:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Build native conversion and CAD engines
+        run: python macos/build_full.py
+      - name: Install Blender arm64 for conversion acceptance
+        run: |
+          curl --fail --location --retry 3 https://download.blender.org/release/Blender5.2/blender-5.2.4-macos-arm64.dmg -o "$RUNNER_TEMP/blender.dmg"
+          hdiutil attach "$RUNNER_TEMP/blender.dmg" -mountpoint "$RUNNER_TEMP/blender-volume" -nobrowse
+          cp -R "$RUNNER_TEMP/blender-volume/Blender.app" "$RUNNER_TEMP/Blender.app"
+          hdiutil detach "$RUNNER_TEMP/blender-volume"
+          echo "BLENDER=$RUNNER_TEMP/Blender.app/Contents/MacOS/Blender" >> "$GITHUB_ENV"
+      - name: Run original conversion and fidelity regressions on Apple Silicon
+        run: |
+          python macos/jc-auto-import/tests/test_conversion.py --blender "$BLENDER" -v
+          python macos/jc-auto-import/tests/test_step.py --blender "$BLENDER"
+          python macos/jc-auto-import/tests/test_c4d_fidelity.py --blender "$BLENDER" --fixture "$RUNNER_TEMP/jc-native-build/visibility.c4d"
+      - name: Package full macOS builds
+        run: python macos/build.py --full
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-full-native
+          path: |
+            packages/macos/*
+          retention-days: 14

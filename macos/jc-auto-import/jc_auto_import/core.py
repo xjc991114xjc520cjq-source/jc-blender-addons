@@ -5,7 +5,7 @@ import json
 import os
 import subprocess
 
-VERSION = '1.0.4-macos-basic.1'
+VERSION = '1.0.4-macos.2'
 EXTERNAL_EXTENSIONS = ('.c4d', '.max', '.3ds', '.3d', '.dae', '.dxf', '.lwo', '.lws', '.lxo', '.ase', '.off', '.x', '.ac', '.ms3d', '.b3d', '.3mf', '.x3d', '.md2', '.md3', '.md5mesh', '.pmx', '.ifc', '.stp', '.step', '.wrl', '.vrml', '.skp', '.dwg', '.igs', '.iges', '.sat')
 NATIVE_EXTENSIONS = ('.fbx', '.obj', '.glb', '.gltf', '.stl', '.ply', '.usd', '.usda', '.usdc', '.usdz', '.abc')
 TARGETS = {'GLB': '.glb', 'FBX': '.fbx', 'OBJ': '.obj'}
@@ -13,13 +13,15 @@ ROOT = Path(__file__).resolve().parent
 
 
 def external_extensions():
-    return ('.3ds', '.max')
+    path = ROOT / 'capabilities.json'
+    extra = json.loads(path.read_text(encoding='utf-8'))['assimp_extensions'] if path.is_file() else []
+    return tuple(sorted((set(EXTERNAL_EXTENSIONS) | set(extra)) - set(NATIVE_EXTENSIONS) - {'.blend'}))
 
 
 def engines():
-    return {'c4d': str(ROOT / 'bin/jc_converter.exe'),
-            'cad': str(ROOT / 'bin/cad/python.exe'),
-            'assimp': str(ROOT / 'bin/jc_converter.exe')}
+    return {'c4d': str(ROOT / 'bin/jc_converter'),
+            'cad': str(ROOT / 'bin/cad/python/bin/python3.13'),
+            'assimp': str(ROOT / 'bin/jc_converter')}
 
 
 def backend_for(path):
@@ -44,13 +46,16 @@ def requirement(path):
         backend = backend_for(path)
     except ValueError:
         return '此版本没有该格式的独立读取器。'
-    if backend not in ('native', '3ds', 'max'):
-        return 'macOS 基础版暂不支持此格式；仅支持 MAX、3DS 和 Blender 原生格式。'
+    for executable in engines().values():
+        p = Path(executable)
+        if p.is_file() and not os.access(p, os.X_OK):
+            p.chmod(p.stat().st_mode | 0o700)
+
     if backend in ('c4d', 'assimp') and not Path(engines()[backend]).is_file():
         return '安装包中的独立转换引擎缺失，请重新安装完整 ZIP。'
     if backend == 'cad' and not all((ROOT / name).is_file() for name in (
-            'bin/cad/runtime-files.json', 'bin/cad/python.exe', 'cad_worker.py',
-            'bin/cad/packages/OCP/OCP.cp313-win_amd64.pyd')):
+            'bin/cad/runtime-files.json', 'bin/cad/python/bin/python3.13', 'cad_worker.py',
+            'bin/cad/packages/OCP/__init__.py')):
         return '安装包中的 STEP 曲面转换组件缺失，请安装完整版本。'
     if backend == 'assimp':
         capabilities = json.loads((ROOT / 'capabilities.json').read_text(encoding='utf-8'))
