@@ -1,10 +1,18 @@
-# JC Blender Agent 0.1.5
+# JC Blender Agent 0.1.6
+
+## 0.1.6：按需 Blender 技能库（2026-11-22）
+
+- 内嵌 14 个技能、126 份文本/脚本参考资源：EL4CTEO/blender-skills 的执行、尺度、硬表面、UV、PBR、烘焙、灯光、渲染、QA 和流程；Bartindigital/blender-hyperrealism-skill 的摄影感诊断；scenario-labs/skills 的执行与灯光诊断；nicceasy/3d-product 的产品制作与 Octane 路线。来源 URL、MIT 许可证和逐文件 SHA-256 随包保留。
+- 新工具 `blender_skill`：空 name 列出目录；name 读取 SKILL.md；resource 读取具体章节或脚本示例，空 resource 列出文件；长文按 next_offset 分页。通过同一 MCP 入口供 Codex、Claude 和 API Agent 使用，离线随包读取，不依赖开发电脑的 Codex skills 文件夹。
+- 经验库开关同时控制技能目录、读取及适配规则注入。读取技能不计作场景检查、编辑或视觉验收；第三方脚本仅作为文本示例，不自动导入/执行，不新增运行时依赖。
+- 提供 Octane 适配规则：先检查实际引擎、几何、法线、单灯归因、降噪和完整色彩链；不把 Cycles 默认值套给 Octane，不盲目叠 AgX/ACES、加污渍、景深或固定尺度倒角。外部技能不是插件新增的自动建模/自动修复端点。
+- 本版随插件包分发，升级后离线可用；旧版没有自动升级或独立知识包拉取能力，不能声称已有设备自动收到。A9 待审复盘不在技能库内；既有已批准案例保持。
 
 在 Blender 的 N 面板输入中文，选择 Codex / Claude Code / API Agent，通过 MCP 实际读写当前场景。运行时仅使用 Python 标准库和 Blender 原生 UI，不需要安装 Tk、pip、uv、Node 或第三方 Python 库。
 
 ## 安装与首次使用
 
-1. 在 Blender：编辑 → 偏好设置 → 插件 → 右上角菜单 → 从磁盘安装，选择 `dist/JC-Blender-Agent-0.1.5.zip`。
+1. 在 Blender：编辑 → 偏好设置 → 插件 → 右上角菜单 → 从磁盘安装，选择 `dist/JC-Blender-Agent-0.1.6.zip`。
 2. 勾选 **JC Blender Agent**。在 3D 视图按 N，点 **JC Agent** 页签。
 3. 点击 **连接 / 检查**。服务在本机回环地址启动，面板显示“已连接 Blender”。
 4. 选择 Agent，填模型（本地 Agent 可留空沿用默认），输入要求，点击 **发送描述**。

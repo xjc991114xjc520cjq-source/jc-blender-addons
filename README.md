@@ -6,7 +6,7 @@
 
 | 插件 | 版本 | 安装包 | 源码与说明 |
 | --- | --- | --- | --- |
-| JC Blender Agent | 0.1.5 | [下载 ZIP](packages/JC-Blender-Agent-0.1.5.zip) | [源码 / 说明](plugins/jc-blender-agent/) |
+| JC Blender Agent | 0.1.6 | [下载 ZIP](packages/JC-Blender-Agent-0.1.6.zip) | [源码 / 说明](plugins/jc-blender-agent/) |
 | JC 历史记录 | 1.0.1 | [下载 ZIP](packages/JC_History_1.0.1_Blender52.zip) | [源码 / 说明](plugins/jc-history/) |
 | JC 六向视图导航 | 1.1.0 | [下载 ZIP](packages/JC-View-Navigator-1.1.0.zip) | [源码 / 说明](plugins/jc-view-navigator/) |
 | JC 自动转换导入 | 1.0.4 | [下载 ZIP](packages/JC-Auto-Import-1.0.4-Windows.zip) | [源码 / 说明](plugins/jc-auto-import/) |
@@ -60,3 +60,8 @@ python plugins/jc-view-navigator/build.py
 仓库不包含 API 密钥、登录凭据、插件运行目录、个人配置、操作历史、场景快照、原始模型或视频。经验库内的案例缩略图属于插件本身的已打包资源。
 
 各插件许可证保留在对应源码目录中。
+
+
+## Agent 0.1.6（2026-11-22）
+
+新增 14 个随包离线 Blender 技能、126 份带来源/许可证/哈希的资料，通过 blender_skill 按需读取。涵盖几何、法线、材质、灯光、渲染和 QA，并明确 Octane 适配限制。沿用经验库开关，脚本仅参考、不自动执行。安装新版即可取得同一套内置技能；现有旧版没有自动更新机制。个人配置、登录与 API Key 不同步。A9 待审复盘未纳入。

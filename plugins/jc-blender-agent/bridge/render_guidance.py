@@ -1,6 +1,7 @@
 """Bundled product-rendering lessons, shared by every agent and MCP client."""
 from pathlib import Path
 import base64
+from bridge.skill_library import skill_instructions
 
 KNOWLEDGE = Path(__file__).with_name("knowledge")
 RENDER_GUIDE_URI = "jc-render://product-rendering-guide"
@@ -20,7 +21,7 @@ def read_resource(uri):
 
 
 def render_instructions():
-    return read_resource(RENDER_GUIDE_URI)
+    return read_resource(RENDER_GUIDE_URI) + "\n\n" + skill_instructions()
 
 
 def resource_list():

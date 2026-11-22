@@ -22,6 +22,7 @@ def tool(name, description, properties=None, required=None, readonly=False):
 
 
 TOOLS = [
+    tool("blender_skill", "Read bundled third-party Blender skills on demand. Empty name lists the catalog and engine adaptation rules. resource defaults to SKILL.md; empty resource lists files. Follow next_offset for long documents. Scripts are text references only, never automatically executed. Requires the reference database switch; reading is not current-scene inspection or editing.", {"name":{"type":"string"},"resource":{"type":"string"},"offset":{"type":"integer","minimum":0,"maximum":10000000}}, readonly=True),
     tool("blender_render_knowledge", "Read bundled product-rendering lessons when the user enables the reference database. topic: workflow, case, recipe or preview (actual approved historical image). Case numbers are scale-specific starting points, not universal settings. Reading this database does not inspect or modify the current Blender scene.", {"topic":{"type":"string","enum":["workflow","case","recipe","preview"]}}, readonly=True),
     tool("blender_attachment", "Read this task's local attachment references. Empty identifier lists IDs/paths. For an ID: text is bounded; images return actual pixels; video returns sampled frame index (0-based). Request multiple indices to inspect motion. Video sampling is not full viewing and has no audio. PDF/models return path only, not parsed contents. Reference reading does not inspect the Blender scene.", {"identifier":{"type":"string"},"index":{"type":"integer","minimum":0,"maximum":23}}, readonly=True),
     tool("blender_scene", "Read active Blender scene, version, objects and selection. Always inspect before editing.", readonly=True),
@@ -81,7 +82,7 @@ class Server:
                 value = {}
             elif method == "tools/list":
                 enabled = self.knowledge_enabled()
-                value = {"tools": [t for t in TOOLS if enabled or t["name"] != "blender_render_knowledge"]}
+                value = {"tools": [t for t in TOOLS if enabled or t["name"] not in ("blender_render_knowledge", "blender_skill")]}
             elif method == "tools/call":
                 try:
                     value = self.call(params.get("name"), params.get("arguments", {}))

@@ -74,7 +74,7 @@ class MCPClient:
             self.lines.put(None)
         self.reader_thread = threading.Thread(target=reader, daemon=True)
         self.reader_thread.start()
-        self.rpc("initialize", {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "jc-api-agent", "version": "0.1.5"}})
+        self.rpc("initialize", {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "jc-api-agent", "version": "0.1.6"}})
         self.send({"jsonrpc": "2.0", "method": "notifications/initialized"})
 
     def send(self, msg):

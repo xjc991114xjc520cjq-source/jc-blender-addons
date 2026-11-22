@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
 sys.path.insert(0,str(PROJECT/'.test_tools'))
-if os.name=='nt':
+if os.name=='nt' and (PROJECT/'.test_tools/pywin32_system32').is_dir():
     for rel in ('win32','win32/lib','pywin32_system32'):
         sys.path.insert(0,str(PROJECT/'.test_tools'/rel))
     _dll=os.add_dll_directory(str(PROJECT/'.test_tools/pywin32_system32'))
@@ -248,6 +248,8 @@ class BridgeTests(unittest.TestCase):
                     self.assertEqual(len((await session.list_resources()).resources),0)
                     denied=await session.call_tool('blender_render_knowledge',{'topic':'recipe'})
                     self.assertTrue(denied.isError)
+                    self.assertNotIn('blender_skill', [t.name for t in (await session.list_tools()).tools])
+                    self.assertTrue((await session.call_tool('blender_skill',{})).isError)
                     with self.assertRaises(McpError):await session.read_resource('jc-render://g603-recipe')
             self.knowledge_enabled=True
             atomic_json(self.dir/'heartbeat.json',{'instance':self.instance,'time':time.time(),'use_render_knowledge':True})
@@ -255,7 +257,14 @@ class BridgeTests(unittest.TestCase):
                 async with ClientSession(r,w) as session:
                     init=await session.initialize()
                     self.assertIn('材质真实感必须来自材质响应',init.instructions)
-                    self.assertEqual(len((await session.list_tools()).tools),9)
+                    self.assertEqual(len((await session.list_tools()).tools),10)
+                    skills=await session.call_tool('blender_skill',{})
+                    self.assertFalse(skills.isError)
+                    self.assertEqual(len(json.loads(skills.content[0].text)['skills']),14)
+                    reference=await session.call_tool('blender_skill',{'name':'3d-product','resource':'references/octane-production.md'})
+                    self.assertFalse(reference.isError)
+                    self.assertIn('Octane production',reference.content[0].text)
+                    self.assertTrue((await session.call_tool('blender_skill',{'name':'blender-core','resource':'../../common.py'})).isError)
                     self.assertEqual(len((await session.list_resources()).resources),3)
                     recipe=await session.read_resource('jc-render://g603-recipe')
                     self.assertEqual(json.loads(recipe.contents[0].text)['output']['width'],3000)

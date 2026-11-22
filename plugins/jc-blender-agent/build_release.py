@@ -5,7 +5,7 @@ import json
 import zipfile
 
 ROOT=Path(__file__).resolve().parent
-VERSION='0.1.5'
+VERSION='0.1.6'
 DIST=ROOT/'dist';DIST.mkdir(exist_ok=True)
 addon=DIST/f'JC-Blender-Agent-{VERSION}.zip'
 with zipfile.ZipFile(addon,'w',zipfile.ZIP_DEFLATED) as z:
@@ -16,13 +16,16 @@ with zipfile.ZipFile(addon,'w',zipfile.ZIP_DEFLATED) as z:
         if path.suffix not in ('.md','.json','.png'):continue
         z.write(path,'jc_blender_agent/runtime/bridge/knowledge/'+path.name)
     z.write(ROOT/'LICENSE','jc_blender_agent/LICENSE')
+    for path in sorted((ROOT/'bridge/skills_data').rglob('*')):
+        if path.is_file() and (path.suffix in ('.md','.json','.py','.txt') or path.name in ('LICENSE','COPYING')) and '__pycache__' not in path.parts:
+            z.write(path,'jc_blender_agent/runtime/'+path.relative_to(ROOT).as_posix())
     z.write(ROOT/'README.md','jc_blender_agent/README.md')
 
 source=DIST/f'JC-Blender-Agent-{VERSION}-source.zip'
 with zipfile.ZipFile(source,'w',zipfile.ZIP_DEFLATED) as z:
     files=[ROOT/'README.md',ROOT/'LICENSE',ROOT/'build_release.py']
     for directory in ('bridge','addon','tests','docs'):
-        files += [p for p in (ROOT/directory).rglob('*') if p.is_file() and (p.suffix in ('.py','.md','.toml') or (p.parent == ROOT/'bridge/knowledge' and p.suffix in ('.json','.png'))) and '__pycache__' not in p.parts]
+        files += [p for p in (ROOT/directory).rglob('*') if p.is_file() and (p.suffix in ('.py','.md','.toml') or (p.parent == ROOT/'bridge/knowledge' and p.suffix in ('.json','.png')) or (p.is_relative_to(ROOT/'bridge/skills_data') and (p.suffix in ('.json','.txt') or p.name in ('LICENSE','COPYING')))) and '__pycache__' not in p.parts]
     for path in sorted(set(files)):
         z.write(path,'JC-Blender-Agent/'+path.relative_to(ROOT).as_posix())
 

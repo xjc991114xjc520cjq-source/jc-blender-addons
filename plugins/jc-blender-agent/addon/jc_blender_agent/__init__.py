@@ -1,4 +1,4 @@
-bl_info = {"name": "JC Blender Agent", "author": "JCOne / Codex", "version": (0, 1, 5),
+bl_info = {"name": "JC Blender Agent", "author": "JCOne / Codex", "version": (0, 1, 6),
     "blender": (4, 2, 0), "location": "3D View > Sidebar > JC Agent", "description": "用自然语言通过本地 Agent 或 API 控制 Blender，包含 MCP 服务", "category": "3D View"}
 
 import bpy

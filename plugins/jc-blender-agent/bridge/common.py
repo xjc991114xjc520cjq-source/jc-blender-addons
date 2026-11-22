@@ -7,7 +7,7 @@ import tempfile
 import time
 import urllib.request
 
-VERSION = "0.1.5"
+VERSION = "0.1.6"
 
 
 def state_root():

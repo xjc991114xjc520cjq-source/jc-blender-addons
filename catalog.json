@@ -1,16 +1,17 @@
 {
-  "updated": "2026-11-09",
+  "updated": "2026-11-22",
   "tested_blender": "5.2.1 LTS (Windows)",
   "plugins": [
     {
       "id": "jc-blender-agent",
       "name": "JC Blender Agent",
-      "version": "0.1.5",
-      "archive": "JC-Blender-Agent-0.1.5.zip",
-      "sha256": "e684c59df0cbef547c1eb8961540794404b094ae62d75d46b4945f8e013b17c5",
-      "package": "packages/JC-Blender-Agent-0.1.5.zip",
+      "version": "0.1.6",
+      "archive": "JC-Blender-Agent-0.1.6.zip",
+      "sha256": "05251db6c5cb4fe2d39ff987f37579694c0aff2c290fbf19bccc933539c9357c",
+      "package": "packages/JC-Blender-Agent-0.1.6.zip",
       "source": "plugins/jc-blender-agent",
-      "bytes": 291011
+      "bytes": 998145,
+      "release": "agent-v0.1.6"
     },
     {
       "id": "jc-history",

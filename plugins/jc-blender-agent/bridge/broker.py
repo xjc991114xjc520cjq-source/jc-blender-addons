@@ -22,6 +22,7 @@ from bridge.agents import find_cli, run_api, run_cli, fetch_models
 from bridge.mcp_server import TOOLS
 from bridge.attachments import Attachments
 from bridge.render_guidance import knowledge_result
+from bridge.skill_library import skill_result
 
 
 class Broker:
@@ -226,10 +227,12 @@ class Broker:
             self.event(job,"tool_result",json.dumps({k:v for k,v in result.items() if k!="image"},ensure_ascii=False)[:3000])
             # Reading a reference is not a successful Blender scene inspection/edit.
             return result
-        if name == "blender_render_knowledge":
+        if name in ("blender_render_knowledge", "blender_skill"):
             if not self.knowledge_config(payload)["enabled"]:
                 raise ValueError("当前为自主调试，渲染经验库已关闭；可在插件面板开启后发送新任务")
-            result = knowledge_result(payload.get("arguments", {}).get("topic", "workflow"))
+            args = payload.get("arguments", {})
+            result = (skill_result(args.get("name", ""), args.get("resource", "SKILL.md"), args.get("offset", 0))
+                      if name == "blender_skill" else knowledge_result(args.get("topic", "workflow")))
             if job:
                 job["tool_calls"] += 1
                 job["knowledge_reads"] = job.get("knowledge_reads", 0) + 1

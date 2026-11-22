@@ -1,0 +1,665 @@
+{
+  "schema_version": 1,
+  "data_version": "2026.11.22.1",
+  "mode": "read-only vendored references; no automatic script execution",
+  "skills": [
+    {
+      "name": "blender-core",
+      "summary": "执行与 Blender 版本/API 核查",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-core/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "references/api-changes-5x.md": {
+          "sha256": "e34f2e39a97833d75b6177c2e281ff9481405efd88bfd2d67003560f0c421fe1",
+          "bytes": 9347
+        },
+        "references/bpy-patterns.md": {
+          "sha256": "ba7bbc708bf198bdcdfa59d9d41d830a4ae119c24ae9457830b73d9e818e2af8",
+          "bytes": 7793
+        },
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/env_report.py": {
+          "sha256": "e628feed806dd265e0c1ce803d92591aac208a9f463d8c47cbb939476d3b347a",
+          "bytes": 2015
+        },
+        "scripts/run_in_blender.py": {
+          "sha256": "e97e078c1b52475d386af2b8f9d27c7578a55c250ccd43ff50bed9c33d380355",
+          "bytes": 3292
+        },
+        "SKILL.md": {
+          "sha256": "85c6161bf7a8e648735bd04957caba76f5e9c7b8506b38afd8496cc795563789",
+          "bytes": 7964
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-scene-setup",
+      "summary": "单位、尺度、资产路径与场景组织",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-scene-setup/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/scene_audit.py": {
+          "sha256": "a7baf10fb5a25acaf87d1024e5ec5fb89aee43b7ebff0f8598c4667cef64ae5b",
+          "bytes": 5041
+        },
+        "SKILL.md": {
+          "sha256": "fbfc9b4fb42fd3434d4112700eeda86049908cd65e5f9d939f043e5358d69a25",
+          "bytes": 5612
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-hardsurface-modeling",
+      "summary": "产品曲面、倒角、平滑与自定义法线",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-hardsurface-modeling/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/apply_stack.py": {
+          "sha256": "3ec1ca458e5f5cd2d1318a4fedd7b25f3a09ab6e58391b0b189bc221914f5aea",
+          "bytes": 5108
+        },
+        "SKILL.md": {
+          "sha256": "558d18dc0641975d45f80f48c9371c2c0bef1f3c087a2da38cd2738a9659498f",
+          "bytes": 5924
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-retopology-uv",
+      "summary": "网格拓扑、UV 与纹理密度",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-retopology-uv/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/auto_retopo.py": {
+          "sha256": "1690a3d9478111e45fe6b1d5f4453b893f82264ded8c95b46650cfc5a8f7d549",
+          "bytes": 4834
+        },
+        "scripts/texel_density.py": {
+          "sha256": "9fd15366aa20aa3005163745b12aae216c0b23a5fdafa0bbec98c1786f0c3cd6",
+          "bytes": 4693
+        },
+        "scripts/uv_pack.py": {
+          "sha256": "863fd392d1eecb79f4ca918deb12de5a3e58561de3795b07b5a4936794de855b",
+          "bytes": 5243
+        },
+        "SKILL.md": {
+          "sha256": "54c4ff16de9873c819ff4ab60dee3b10a2e0bf2c29301a1b2ff1575b5abd7e06",
+          "bytes": 5267
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-pbr-materials",
+      "summary": "PBR 材质、数据贴图与法线",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-pbr-materials/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "references/pbr-values.md": {
+          "sha256": "d92f53568ea1525c84d68fc7077abfa9cc64a517ac9472fdc18b873784b84d40",
+          "bytes": 2645
+        },
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/build_pbr_material.py": {
+          "sha256": "c8dfd0487b4cd73b42e24de3c14da5a26979bc5ea8bfea59c8f45fcc545a4400",
+          "bytes": 12074
+        },
+        "SKILL.md": {
+          "sha256": "6c02bc13dc33e71d816dc6b498bf38312ed7e17aa2bfcc57446a45efc7c1f318",
+          "bytes": 6126
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-texture-baking",
+      "summary": "高低模与法线/粗糙度烘焙",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-texture-baking/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/bake_maps.py": {
+          "sha256": "16b27115c8bb19f9d4b2162a67467df9b3f9f720dcc365497a7443be9cab5e0a",
+          "bytes": 11253
+        },
+        "SKILL.md": {
+          "sha256": "bf94f8054b6a9483214d2ceb3e160e44d2593b51154c553defa190272431ccb4",
+          "bytes": 5713
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-lighting-lookdev",
+      "summary": "摄影棚反射、柔光箱与材质测试",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-lighting-lookdev/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/turntable.py": {
+          "sha256": "a12ee7be3fcf8bd9653f285932286dfe71f6534668d9cf3a52e63234ee972483",
+          "bytes": 7786
+        },
+        "SKILL.md": {
+          "sha256": "adce74e508559230cd078bf658374a66ed1faa8a975eccfa196ea6d5a59e1e54",
+          "bytes": 5418
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-rendering",
+      "summary": "采样、滤波、降噪、色彩与输出",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-rendering/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/render_batch.py": {
+          "sha256": "2ee9043b297148b9d76b54fc22390e1e6062e2e27c33ab0386dcfa2fdb59c432",
+          "bytes": 6960
+        },
+        "SKILL.md": {
+          "sha256": "0c1a3b2c9537868dda84d981f26060eeeb159d26769c6344f608641ac6fc1b6f",
+          "bytes": 5887
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-asset-qa",
+      "summary": "几何、法线、贴图及视觉验收",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-asset-qa/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "scripts/_bpyx.py": {
+          "sha256": "90f44d70198b199cd922e4e57f7e55c56a3041d3a498ef7d444b019f9795d2ff",
+          "bytes": 4524
+        },
+        "scripts/qa_check.py": {
+          "sha256": "25622654b48111a350a5b5461c064a7437175e1bde9d2b3c56dcbac8bfcfe1d3",
+          "bytes": 20525
+        },
+        "scripts/review_shots.py": {
+          "sha256": "63da4d7a3a42e81b51773071bdad3eba74fcacd3cf54df4364bd5676ef24a647",
+          "bytes": 6443
+        },
+        "SKILL.md": {
+          "sha256": "968e4435eeba040f0952cc335c8e9e7182e1d7008aa4295f202ddb836fa49ec9",
+          "bytes": 5185
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-workflow-recipes",
+      "summary": "产品制作分阶段流程",
+      "source": "https://github.com/EL4CTEO/blender-skills/tree/main/skills/blender-workflow-recipes/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/EL4CTEO/blender-skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "SKILL.md": {
+          "sha256": "94de00b0a0a7284cd9d997924478be5cc7a8c7e4d26cbdac56adc86634d15324",
+          "bytes": 8226
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d81d0037e3a29a01ccfefaae420d5ba73e905cabf3995700e9075c7205c06cc5",
+          "bytes": 1064
+        }
+      }
+    },
+    {
+      "name": "blender-hyperrealism",
+      "summary": "显假原因、摄影参考、几何与光影综合诊断",
+      "source": "https://github.com/Bartindigital/blender-hyperrealism-skill/tree/main/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/Bartindigital/blender-hyperrealism-skill/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "LICENSE": {
+          "sha256": "00a80488ab1467fa39f5003c9a90abce466957c62daa12fe69324101a01f5dd0",
+          "bytes": 1075
+        },
+        "README.md": {
+          "sha256": "b58253ab27af5deb6d4156e96273cd3ad644c50795e9ed0ff8c0112c5682c0cd",
+          "bytes": 4239
+        },
+        "references/01-lighting.md": {
+          "sha256": "26799a8732f6a394c0d5d806042db89773476351e0bd8a686dce19d754a815a0",
+          "bytes": 10630
+        },
+        "references/02-materials.md": {
+          "sha256": "089c2d3e06a4964070aa2dbb1b9b2e1fdd55a021af35cca9e68318ba5e6e4d70",
+          "bytes": 8806
+        },
+        "references/03-texturing-imperfections.md": {
+          "sha256": "35b3e37106540344c3639d4941882c832c27ec7d775c82d5508f2cc9b22bb202",
+          "bytes": 7098
+        },
+        "references/04-geometry-scale.md": {
+          "sha256": "a476506fa7f1385ebe8341b6519304e88a860046e64ad2e5809942ae9adf9e80",
+          "bytes": 6524
+        },
+        "references/05-camera-optics.md": {
+          "sha256": "6125cd14e91d9b4ff8ee76071b43860f77554ff421d24bb832cfd9d40ad5c935",
+          "bytes": 6429
+        },
+        "references/06-color-management-render.md": {
+          "sha256": "519e9164a296ce8f85aab4d16fab5de8d1c41e711a90f6cb4e45d60a7520a594",
+          "bytes": 6621
+        },
+        "references/07-post-compositing.md": {
+          "sha256": "d6e650b19c52b200d55f324dac78700761d02c0cedc0272dbb607311db5b05db",
+          "bytes": 5913
+        },
+        "references/08-composition-workflow.md": {
+          "sha256": "42decc20aa902240bcb4c5104cc40fd71843d089e9645ddbd9b80c1537dcb65c",
+          "bytes": 6362
+        },
+        "references/09-animation-motion.md": {
+          "sha256": "dd527cc1f8b6406445f9bbcae29fede9ccc9d578a9caf072ae9c8f9ebf37d38a",
+          "bytes": 7408
+        },
+        "references/10-mistakes-tools.md": {
+          "sha256": "eec4d4d40759fd0b65171e88cf6b30657989235b95afc1781f798c1e11dd696a",
+          "bytes": 5250
+        },
+        "references/11-beyond-the-corpus.md": {
+          "sha256": "12fe1ab1517e84b9fdba35f4ea82d50ec3fc5f7bddb5ca85460a9c4187d38d1a",
+          "bytes": 6513
+        },
+        "SKILL.md": {
+          "sha256": "f8335912a866203c4ebfd8bddb51255e3c20aa2a5c962ecf58e770eb0f82fe36",
+          "bytes": 8735
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "00a80488ab1467fa39f5003c9a90abce466957c62daa12fe69324101a01f5dd0",
+          "bytes": 1075
+        }
+      }
+    },
+    {
+      "name": "scenario-blender-expert",
+      "summary": "执行通道、版本检查与真实场景验证",
+      "source": "https://github.com/scenario-labs/skills/tree/main/skills/dcc/blender/scenario-blender-expert/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/scenario-labs/skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "references/blender-5.2-deltas.md": {
+          "sha256": "a62d17344b968501b46f333ddc9badb8ebdb6c8a23cc1be32c07aff0d85d909d",
+          "bytes": 119846
+        },
+        "references/bpy-reliability.md": {
+          "sha256": "d5b138c58fc66fe6bb1709cfd1748d5ceb959bd8e7b34460e4ca9a622af698f9",
+          "bytes": 25232
+        },
+        "scripts/bx_audit.py": {
+          "sha256": "f04532d53a337e21f26b794735747f3e949256b8583b5b32469f77c53d22eaab",
+          "bytes": 34441
+        },
+        "scripts/bx_gui.py": {
+          "sha256": "d5c020f27d2714f7f773da30cfa190017be453a621bb45f1eccececa3a33d60c",
+          "bytes": 8951
+        },
+        "scripts/bx_review.py": {
+          "sha256": "5b274739b2a8ed26b3fe144e0d6ed15e51aee8e52b2852b51d5f6f464e939106",
+          "bytes": 15644
+        },
+        "SKILL.md": {
+          "sha256": "089491d0a656b3097762a250ee2eeea590cc5e9f489c9819411277d676cf1ddd",
+          "bytes": 18856
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "26f54ae8c2f3d1fb0e3f810a599e6fb51852d1f176b97578961826be3bb98cef",
+          "bytes": 1070
+        }
+      }
+    },
+    {
+      "name": "scenario-blender-lighting-rendering",
+      "summary": "光源归因、漏光诊断、灯光层与后期审查",
+      "source": "https://github.com/scenario-labs/skills/tree/main/skills/dcc/blender/scenario-blender-lighting-rendering/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/scenario-labs/skills/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "Blender 通用 / Cycles / EEVEE；Octane 需按 integration_zh.md 适配",
+      "files": {
+        "references/critique.md": {
+          "sha256": "c5ce3c0ceed71ce5635cefff90c445a912e4776d25b74afe9076ef649d2268a0",
+          "bytes": 8129
+        },
+        "references/expert-notes.md": {
+          "sha256": "646d153bd4fe0c4f9dda42f438f2b73428488502776120825482cb9449decb5b",
+          "bytes": 20183
+        },
+        "references/procedures.md": {
+          "sha256": "f8578a9c9738d5610c9bdc7638287e96d2ce2b955c21b089083b5855de0df2e8",
+          "bytes": 30333
+        },
+        "references/sources.md": {
+          "sha256": "a2944499cc3efc7dc5cd051a8362b3b162625c5d213f05255cbe4326ad4b4cfb",
+          "bytes": 15671
+        },
+        "scripts/bx_light.py": {
+          "sha256": "6f6624765f2afdfebc0efc4b77313fee3cacef9e7d983bcb3a95c88c8fa2f8f2",
+          "bytes": 102909
+        },
+        "SKILL.md": {
+          "sha256": "2d428bcf7d7af12be58a680dc670fb965335b742bb7fa69fc560870a7a45403a",
+          "bytes": 20329
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "26f54ae8c2f3d1fb0e3f810a599e6fb51852d1f176b97578961826be3bb98cef",
+          "bytes": 1070
+        }
+      }
+    },
+    {
+      "name": "3d-product",
+      "summary": "含 Octane 的产品制作、渲染预算与验收",
+      "source": "https://github.com/nicceasy/3d-product/tree/main/skills/3d-product/",
+      "license": "MIT",
+      "license_source": "https://raw.githubusercontent.com/nicceasy/3d-product/main/LICENSE",
+      "retrieved_date": "2026-11-22",
+      "engine_scope": "含 Octane/Cycles；须核对本机版本与依赖",
+      "files": {
+        "references/alive-environments.md": {
+          "sha256": "bdef90f87f21d0cc445eb1911292e0be391da898377e65ccbcfc70052c4d96cd",
+          "bytes": 34967
+        },
+        "references/animation.md": {
+          "sha256": "35671b20095eb86d8b67bdd1ec2af1934f226e0abcd2e6693c9d39c50793511c",
+          "bytes": 12836
+        },
+        "references/apple-rubric.md": {
+          "sha256": "920019a6b80a0d399b64c7ab6d9a2607c417c626aaa4e05db5191f342ac21eb0",
+          "bytes": 1950
+        },
+        "references/approaches.md": {
+          "sha256": "162020231793cb573116daba35913e6b33a7f0994cfac8fbaa81daf5321e8bd9",
+          "bytes": 8364
+        },
+        "references/camera-motion.md": {
+          "sha256": "2f6df748c9a364e8bbcc9a3dbc476f11ecb473342cf9371054d43bf544a2a2e4",
+          "bytes": 21574
+        },
+        "references/camera-post.md": {
+          "sha256": "d47f459c30ff61153c44d8b9ae1d4733d2017235a747dabebc1c557c708b1566",
+          "bytes": 7347
+        },
+        "references/changelog.md": {
+          "sha256": "1fb66f7a38b64898fd35a557fca174f26e7fa3b2f662992662913107fe10d2c3",
+          "bytes": 5420
+        },
+        "references/composition-analysis.md": {
+          "sha256": "2a872085ff6da65084e3922d806ea8dc4f7e5d6e5a95ae013bb4f742b1182098",
+          "bytes": 30413
+        },
+        "references/composition-exploration.md": {
+          "sha256": "36b9051f25f1b572df02d05f5121b858bf667f472a3b19b40d8bd5f18628f21e",
+          "bytes": 7155
+        },
+        "references/cycles-production.md": {
+          "sha256": "5ff80ce81f7f2a12d4899ace97be6f411b7cf5ced63ca192a773dafb833156f5",
+          "bytes": 17961
+        },
+        "references/editing.md": {
+          "sha256": "9b5d398194acd1d60435d052ebcbd1448003422ce7201b1e2b05249a48fb6a94",
+          "bytes": 15281
+        },
+        "references/elements.md": {
+          "sha256": "9ca45df1edf1583f8bcea78ab02ee1ea9e6f9f01c27b2f3115ab65f3b3530fd2",
+          "bytes": 19076
+        },
+        "references/environments.md": {
+          "sha256": "7419840f7b924c73eced6b897e4f721b21e588b10897cc4e228a9515d950625c",
+          "bytes": 12234
+        },
+        "references/fast-feedback.md": {
+          "sha256": "601aa2a3d95b61bdfd21d239cf03cf5d7d8ace2a95fd52fc9518a2498a6b01e8",
+          "bytes": 7558
+        },
+        "references/figjam-board.md": {
+          "sha256": "96273a995d854a5a14ae455023869709999c00d6de660aeec3c9eeb8ac43b462",
+          "bytes": 4358
+        },
+        "references/finishing.md": {
+          "sha256": "7b3d1d9f94d3780bf2e5c0841132666c1b6c4e7471175c2a117d6b45fe004974",
+          "bytes": 24570
+        },
+        "references/fkl-frames.md": {
+          "sha256": "a00b56ab5ab9b1bc99e8658dcfe4e1bcae48c96970f4f6111e0eb87704a7194a",
+          "bytes": 19587
+        },
+        "references/glass-light.md": {
+          "sha256": "c2c4c0b50b82e55bca02930c7a2c4d81c3040bda28dabd31e1eaca0c8f7d5901",
+          "bytes": 13301
+        },
+        "references/graphics-labels.md": {
+          "sha256": "3b4ca150d4894a20bc5c413a762b53a74bd29fca808e1ac8314633839a357996",
+          "bytes": 5925
+        },
+        "references/greybox-animation.md": {
+          "sha256": "27d6d31bbd0f52d90aac289979314cefda386a8cd1d67cf2a8adf5c7fd852a42",
+          "bytes": 16515
+        },
+        "references/greybox-composition.md": {
+          "sha256": "c88e7b27a6cd23ac4b92252b36353f45a44080498eb856e64b7aac45485d6852",
+          "bytes": 6044
+        },
+        "references/hard-surface.md": {
+          "sha256": "9a35ab91f1f37f7e1100617084355821fb03c687498cb0fbda8be1240ce2e5ed",
+          "bytes": 10322
+        },
+        "references/lighting.md": {
+          "sha256": "23d058037aedb669c4d59bb91c76d7dba916121e76544a053a156fa73de46c3c",
+          "bytes": 31703
+        },
+        "references/manufacturing-variation.md": {
+          "sha256": "39136993c3957bb15711c41fb11ab54aa3c26d469992e62bed6f6c9c0f095856",
+          "bytes": 4650
+        },
+        "references/octane-production.md": {
+          "sha256": "ac245a887abe60f81c8055c274e8d4f33054a2f9dc44e8b7c266a57910b24333",
+          "bytes": 26853
+        },
+        "references/orchestration.md": {
+          "sha256": "878900c3974c650328e7569ae6f8968d791321ccc7710ec8256f0410d3b65b00",
+          "bytes": 3455
+        },
+        "references/patent-to-model.md": {
+          "sha256": "65e9ef6df407d35247cd2d56232f336a8afe7deabb4f6a05e6983931cef13d7c",
+          "bytes": 16872
+        },
+        "references/pipeline-commands.md": {
+          "sha256": "74f41f0833dc091e778aecc6e367650c479ea0cb3c38478e356e46b0def2a6f9",
+          "bytes": 10838
+        },
+        "references/realism-finishing.md": {
+          "sha256": "7947715f7f33af2a3953c0937928f0ab579565538787657406d9d2fce25da2a7",
+          "bytes": 14039
+        },
+        "references/reference-detailing.md": {
+          "sha256": "adc578a617b3b825bc5566d27ddea68a70de33e8fc3a3d01fc3889c8605dc107",
+          "bytes": 23877
+        },
+        "references/render-farm.md": {
+          "sha256": "c95212505bdd19611306ffc68e8ebfa2566b002575dfd67c8e91b47af2bf5862",
+          "bytes": 5667
+        },
+        "references/render-supervision.md": {
+          "sha256": "36ccd0a67f064a539d3a9ca6ac992fcd145b31a495338f6e748405a1b7ddc101",
+          "bytes": 12353
+        },
+        "references/research-protocol.md": {
+          "sha256": "04b7618d09659498fc2f2fa04a0e0bc16fbbd66e2bc36fff120b107f320a09bd",
+          "bytes": 11726
+        },
+        "references/scene-optimisation.md": {
+          "sha256": "3a6e9f46378f485cf9b599ddf1b767e4083daf17c9d4daa9f2082b272679e517",
+          "bytes": 30415
+        },
+        "references/shots-and-script.md": {
+          "sha256": "2ff759487aa9ce831a4226950924ce5bcf404826640e378d56278cc10a185c41",
+          "bytes": 14333
+        },
+        "references/site-profile-example.md": {
+          "sha256": "1d34258c9a4ea565558672aa16feaaa460785c017cdd05aabc2c87a9a2337b01",
+          "bytes": 8878
+        },
+        "references/sound-design.md": {
+          "sha256": "129d2fedbeb1b198887ab88c7ccf2eca4dee9280ab18a8664ecfd233a5ac24db",
+          "bytes": 23392
+        },
+        "references/transition-shots.md": {
+          "sha256": "2584a0d66635cdea830b0bf6cf527d89bbca2a8d2dfb8e72f7225cc421cb157b",
+          "bytes": 9909
+        },
+        "references/traps.md": {
+          "sha256": "031447912c89b2a7ced2cec80c1e4109c961b7bd7002894d9bfab9e358dedc4b",
+          "bytes": 52873
+        },
+        "references/wear-materials.md": {
+          "sha256": "0c7857c3b8f553f0ebdbb1f30785263678784156a674f58c956a3ce107fd62d9",
+          "bytes": 5443
+        },
+        "scripts/budget.example.json": {
+          "sha256": "32f7ee21d6c94bdfb33dffd0d631e4be1d609a91c8c7f4826e10dad44956917c",
+          "bytes": 2060
+        },
+        "scripts/comp_analysis.py": {
+          "sha256": "8898f10df4e7c9d07d672c012398d398d1afd3377843627b25e461a101c806b6",
+          "bytes": 125303
+        },
+        "scripts/lighting_rules.json": {
+          "sha256": "2255a4505f908640cf65d50d7de9852c1d0f145f0aa4597b4334e5fe66b156c5",
+          "bytes": 36243
+        },
+        "scripts/loudness_profile.py": {
+          "sha256": "308154aec5c0bb7309ae29bed52d747e95fd1491a8b947192c52524995a9f782",
+          "bytes": 18565
+        },
+        "scripts/macro_focus.py": {
+          "sha256": "6300831fb9cb270577666ed690628604b476d1a0213f95d6e8879ac166068f14",
+          "bytes": 6144
+        },
+        "scripts/motion_qa.py": {
+          "sha256": "f8fb055b0c9895aec97b4a7dbabd0a901ca3202d79b16e048a65b3fe9ac5458b",
+          "bytes": 20316
+        },
+        "scripts/probe_setup.py": {
+          "sha256": "7173f0ee077850d13d5c7c4646b50a5fa5cd874029c83abbd8478c02e5239aed",
+          "bytes": 23684
+        },
+        "scripts/reads_metric.py": {
+          "sha256": "07ec84186b58f6f79c98665755c76c71b261cc5bee45b153bde62802b64803f8",
+          "bytes": 14267
+        },
+        "scripts/scene_weight.py": {
+          "sha256": "5cc5005f4f68be1aefba32d10d1c0183cb72976db89fdc4fff1d4314787de43f",
+          "bytes": 13065
+        },
+        "scripts/site.example.json": {
+          "sha256": "fb7f258d5e68b1140af06a00f06c1160a8c75245fe7a740f64fc791ca11ba40b",
+          "bytes": 560
+        },
+        "SKILL.md": {
+          "sha256": "f1846e3b8bcf39d30e2d7bc1c3ae3849b2b142ed7b792cc2b679ccaab941836c",
+          "bytes": 49153
+        },
+        "LICENSE.upstream.txt": {
+          "sha256": "d559ae961982eb5f9f2589a6a269e540058e5c42ab3795cf1e3fd43e1dd6a9bd",
+          "bytes": 1066
+        }
+      }
+    }
+  ]
+}
