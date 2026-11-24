@@ -39,21 +39,198 @@ def remove_tiny_crossings(points, plane):
                 u = cross(sub(c, a), r) / denominator
                 if 0 < t < 1 and 0 < u < 1:
                     q = (a[0] + t * r[0], a[1] + t * r[1])
-                    loop = [q] + coords[i + 1:j + 1]
-                    area = abs(sum(cross(loop[k], loop[(k + 1) % len(loop)]) for k in range(len(loop))) / 2)
-                    spans = [max(p[k] for p in loop) - min(p[k] for p in loop) for k in range(2)]
-                    if area > 1e-4 or max(spans) > .5:
+                    loops = ([q] + coords[i + 1:j + 1], [q] + coords[j + 1:] + coords[:i + 1])
+                    small = None
+                    for side, loop in enumerate(loops):
+                        area = abs(sum(cross(loop[k], loop[(k + 1) % len(loop)]) for k in range(len(loop))) / 2)
+                        spans = [max(p[k] for p in loop) - min(p[k] for p in loop) for k in range(2)]
+                        if area <= 1e-4 and max(spans) <= .5:
+                            small = side
+                            break
+                    if small is None:
                         return None
                     point = origin.Translated(x_axis.Multiplied(q[0]).Added(y_axis.Multiplied(q[1])))
-                    crossing = (i, j, point)
+                    crossing = (i, j, point, small)
                     break
             if crossing:
                 break
         if crossing is None:
             return points
-        i, j, point = crossing
-        points = points[:i + 1] + [point] + points[j + 1:]
+        i, j, point, small = crossing
+        points = points[:i + 1] + [point] + points[j + 1:] if small == 0 else [point] + points[i + 1:j + 1]
     return None
+
+
+def recover_parametric_mesh(face):
+    """Mesh bounded trim polygons in normalized UV, then sample the source surface.
+
+    Only used after OCCT's normal/fresh-face meshing fails. No source topology,
+    assembly placement or analytic surface is changed. Reject oversized work,
+    non-finite samples, large boundary repairs and area/deflection violations.
+    """
+    from OCP.BRep import BRep_Tool, BRep_Builder
+    from OCP.BRepTools import BRepTools, BRepTools_WireExplorer
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakePolygon, BRepBuilderAPI_MakeFace
+    from OCP.BRepMesh import BRepMesh_IncrementalMesh
+    from OCP.BRepBndLib import BRepBndLib
+    from OCP.Bnd import Bnd_Box
+    from OCP.GProp import GProp_GProps
+    from OCP.BRepGProp import BRepGProp
+    from OCP.GCPnts import GCPnts_QuasiUniformDeflection
+    from OCP.TopAbs import TopAbs_WIRE, TopAbs_REVERSED
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopoDS import TopoDS
+    from OCP.TopLoc import TopLoc_Location
+    from OCP.gp import gp_Pnt, gp_Pnt2d, gp_Pln, gp_Dir, gp_Vec
+    from OCP.Poly import Poly_Triangulation, Poly_Triangle
+
+    local = TopoDS.Face_s(face.Located(TopLoc_Location()))
+    surface = BRep_Tool.Surface_s(local)
+    bounds = BRepTools.UVBounds_s(local)
+    u0, u1, v0, v1 = bounds
+    if not all(math.isfinite(x) for x in bounds) or u1 <= u0 or v1 <= v0:
+        return None
+    props = GProp_GProps()
+    BRepGProp.SurfaceProperties_s(local, props)
+    area = abs(props.Mass())
+    if not math.isfinite(area):
+        return None
+    box = Bnd_Box()
+    BRepBndLib.AddOptimal_s(local, box, False, False)
+    if box.IsVoid():
+        return None
+    limits = box.Get()
+    plane = gp_Pln(gp_Pnt(0, 0, 0), gp_Dir(0, 0, 1))
+    wires = TopExp_Explorer(local, TopAbs_WIRE)
+    polygons, edge_groups = [], []
+    total = 0
+    while wires.More():
+        wire = TopoDS.Wire_s(wires.Current())
+        wires.Next()
+        explorer = BRepTools_WireExplorer(wire, local)
+        points, curves = [], []
+        while explorer.More():
+            edge = explorer.Current()
+            explorer.Next()
+            curve = BRepAdaptor_Curve(edge)
+            pc = BRep_Tool.CurveOnSurface_s(edge, local, 0., 0.)
+            if pc is None:
+                return None
+            first, last = curve.FirstParameter(), curve.LastParameter()
+            curves.append((pc, first, last))
+            sample = GCPnts_QuasiUniformDeflection(curve, 1e-6)
+            if not sample.IsDone() or sample.NbPoints() > 10000:
+                return None
+            parameters = [sample.Parameter(i) for i in range(1, sample.NbPoints() + 1)]
+            if edge.Orientation() == TopAbs_REVERSED:
+                parameters.reverse()
+            for parameter in parameters:
+                uv = pc.Value(parameter)
+                point = gp_Pnt((uv.X() - u0) / (u1 - u0) * 100,
+                               (uv.Y() - v0) / (v1 - v0) * 100, 0)
+                if not points or points[-1].Distance(point) > 1e-7:
+                    points.append(point)
+                    total += 1
+                    if total > 10000:
+                        return None
+        edge_groups.append(curves)
+        # Two coincident trims with vanishing analytic area describe a collapsed
+        # edge, not a missing shell. Require agreement along both entire trims.
+        if area < 1e-10 and len(curves) == 2:
+            samples = []
+            for pc, first, last in curves:
+                samples.append([surface.Value(*pc.Value(first + (last-first)*i/64).Coord()) for i in range(65)])
+            distance = min(max(a.Distance(b) for a, b in zip(samples[0], samples[1])),
+                           max(a.Distance(b) for a, b in zip(samples[0], reversed(samples[1]))))
+            if distance <= 1e-7 and not wires.More() and len(edge_groups) == 1:
+                return 'degenerate-edge'
+        if len(points) < 3:
+            return None
+        if points[-1].Distance(points[0]) < 1e-7:
+            points.pop()
+        points = remove_tiny_crossings(points, plane)
+        if points is None or len(points) < 3:
+            return None
+        polygon = BRepBuilderAPI_MakePolygon()
+        for point in points:
+            polygon.Add(point)
+        polygon.Close()
+        if not polygon.IsDone():
+            return None
+        polygons.append((wire.IsSame(BRepTools.OuterWire_s(local)), polygon.Wire()))
+    outer = [wire for is_outer, wire in polygons if is_outer]
+    if len(outer) != 1 or area <= 1e-12:
+        return None
+    maker = BRepBuilderAPI_MakeFace(outer[0], True)
+    for is_outer, wire in polygons:
+        if not is_outer:
+            maker.Add(wire)
+    if not maker.IsDone():
+        return None
+    uv_face = maker.Face()
+    BRepMesh_IncrementalMesh(uv_face, .01, False, .1, False)
+    mesh = BRep_Tool.Triangulation_s(uv_face, TopLoc_Location())
+    if mesh is None or not mesh.NbTriangles():
+        return None
+    uv = [(u0 + mesh.Node(i).X()/100*(u1-u0), v0 + mesh.Node(i).Y()/100*(v1-v0))
+          for i in range(1, mesh.NbNodes()+1)]
+    xyz = [surface.Value(*point) for point in uv]
+    triangles = [tuple(j-1 for j in mesh.Triangle(i).Get()) for i in range(1, mesh.NbTriangles()+1)]
+    tolerance = min(.002, max(1e-7, math.sqrt(area)*.005))
+    for _ in range(7):
+        marked = set()
+        for a, b, c in triangles:
+            for x, y in ((a,b), (b,c), (c,a)):
+                mid = surface.Value(*[(uv[x][k]+uv[y][k])/2 for k in range(2)])
+                chord = gp_Pnt(*[(xyz[x].Coord()[k]+xyz[y].Coord()[k])/2 for k in range(3)])
+                if mid.Distance(chord) > tolerance:
+                    marked.add(tuple(sorted((x,y))))
+            center = surface.Value(*[(uv[a][k]+uv[b][k]+uv[c][k])/3 for k in range(2)])
+            chord = gp_Pnt(*[(xyz[a].Coord()[k]+xyz[b].Coord()[k]+xyz[c].Coord()[k])/3 for k in range(3)])
+            if center.Distance(chord) > tolerance:
+                marked.update(tuple(sorted(pair)) for pair in ((a,b),(b,c),(c,a)))
+        current_area = sum(gp_Vec(xyz[a],xyz[b]).Crossed(gp_Vec(xyz[a],xyz[c])).Magnitude()/2 for a,b,c in triangles)
+        if not marked and math.isfinite(current_area) and abs(current_area-area) <= max(1e-10,area*.002):
+            break
+        # Uniform shared-edge subdivision avoids folded skinny fans on curved trims.
+        marked = {tuple(sorted(pair)) for a,b,c in triangles for pair in ((a,b),(b,c),(c,a))}
+        if len(uv)+len(marked) > 300000 or len(triangles)*4 > 1000000:
+            return None
+        mids = {}
+        for x,y in sorted(marked):
+            mids[(x,y)] = len(uv)
+            point = tuple((uv[x][k]+uv[y][k])/2 for k in range(2))
+            uv.append(point)
+            xyz.append(surface.Value(*point))
+        refined = []
+        for a,b,c in triangles:
+            ab,bc,ca = [mids[tuple(sorted(edge))] for edge in ((a,b),(b,c),(c,a))]
+            refined.extend(((a,ab,ca),(ab,b,bc),(ca,bc,c),(ab,bc,ca)))
+        triangles = refined
+    else:
+        return None
+    for point in xyz:
+        coord = point.Coord()
+        if any(not math.isfinite(coord[k]) or coord[k] < limits[k]-.0001 or coord[k] > limits[k+3]+.0001 for k in range(3)):
+            return None
+    mesh_area = sum(gp_Vec(xyz[a],xyz[b]).Crossed(gp_Vec(xyz[a],xyz[c])).Magnitude()/2 for a,b,c in triangles)
+    if not math.isfinite(mesh_area) or abs(mesh_area-area) > max(1e-10,area*.002):
+        return None
+    recovered = Poly_Triangulation(len(uv),len(triangles),True,False)
+    for i, point in enumerate(xyz,1):
+        recovered.SetNode(i,point)
+        recovered.SetUVNode(i,gp_Pnt2d(*uv[i-1]))
+    for i,(a,b,c) in enumerate(triangles,1):
+        # OCCT's writer applies the source face orientation itself. Store the
+        # forward surface orientation, irrespective of the temporary UV plane.
+        if ((uv[b][0]-uv[a][0])*(uv[c][1]-uv[a][1]) -
+                (uv[b][1]-uv[a][1])*(uv[c][0]-uv[a][0])) < 0:
+            b,c = c,b
+        recovered.SetTriangle(i,Poly_Triangle(a+1,b+1,c+1))
+    recovered.Deflection(tolerance)
+    BRep_Builder().UpdateFace(face,recovered)
+    return 'parametric-trim'
 
 
 def repair_face_mesh(face):
@@ -117,7 +294,7 @@ def repair_face_mesh(face):
         return method
     surface = BRepAdaptor_Surface(local)
     if surface.GetType() != GeomAbs_Plane:
-        return None
+        return recover_parametric_mesh(face)
     plane = surface.Plane()
     normal = gp_Vec(plane.Axis().Direction())
     origin = plane.Location()
@@ -232,6 +409,7 @@ def convert(source, output):
         while faces.More():
             face = TopoDS.Face_s(faces.Current())
             mesh = BRep_Tool.Triangulation_s(face, TopLoc_Location())
+            method = None
             if mesh is None or mesh.NbTriangles() == 0:
                 try:
                     method = repair_face_mesh(face)
@@ -242,7 +420,7 @@ def convert(source, output):
                 mesh = BRep_Tool.Triangulation_s(face, TopLoc_Location())
             if mesh is not None and mesh.NbTriangles() > 0:
                 triangles += mesh.NbTriangles()
-            else:
+            elif method != 'degenerate-edge':
                 missing += 1
             faces.Next()
     if missing:

@@ -12,7 +12,15 @@ PLUGIN=ROOT/'jc_auto_import'
 def verify(outputs):
     import bpy,bmesh,math
     sys.path.insert(0,str(ROOT))
-    from jc_auto_import.worker import import_model
+    from jc_auto_import.worker import import_model,complete_cad_material_slots
+    missing=bpy.data.meshes.new('CAD default-material regression')
+    missing.from_pydata([(0,0,0),(1,0,0),(0,1,0)],[],[(0,1,2)])
+    assert complete_cad_material_slots()>=1
+    assert missing.materials[0] is not None
+    saved=missing.materials[0]
+    assert complete_cad_material_slots()==0
+    assert missing.materials[0]==saved
+    bpy.data.meshes.remove(missing)
     for target,result in outputs.items():
         bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
         import_model(result['output'])
@@ -52,11 +60,34 @@ def verify_repairs():
     tiny=[gp_Pnt(0,0,0),gp_Pnt(1,0,0),gp_Pnt(1.2,.0001,0),gp_Pnt(1,.0001,0),gp_Pnt(1.2,0,0),gp_Pnt(2,0,0),gp_Pnt(2,2,0),gp_Pnt(0,2,0)]
     result=cad_worker.remove_tiny_crossings(tiny,plane)
     assert result is not None and len(result)<len(tiny)
+    # The same spur straddling the cyclic wire's first/last point must not cause
+    # the large valid region to be discarded.
+    for offset in range(len(tiny)):
+        rotated=tiny[offset:]+tiny[:offset]
+        assert cad_worker.remove_tiny_crossings(rotated,plane) is not None
     polygon=BRepBuilderAPI_MakePolygon()
     for p in clean:polygon.Add(p)
     polygon.Close();face=BRepBuilderAPI_MakeFace(plane,polygon.Wire(),True).Face()
     assert cad_worker.repair_face_mesh(face)=='fresh-face'
     assert BRep_Tool.Triangulation_s(face,TopLoc_Location()).NbTriangles()==2
+    # Exercise the independent UV route on a microscopic curved face, including
+    # a reversed face. Mesh winding remains forward for OCCT's face transform.
+    from OCP.gp import gp_Cylinder,gp_Ax3,gp_Vec
+    from OCP.TopAbs import TopAbs_REVERSED
+    for reverse in (False,True):
+        cylinder=gp_Cylinder(gp_Ax3(),.002)
+        curved=BRepBuilderAPI_MakeFace(cylinder,.1,.7,0,.001).Face()
+        if reverse:curved.Orientation(TopAbs_REVERSED)
+        assert cad_worker.recover_parametric_mesh(curved)=='parametric-trim'
+        mesh=BRep_Tool.Triangulation_s(curved,TopLoc_Location())
+        area=0
+        for i in range(1,mesh.NbTriangles()+1):
+            a,b,c=mesh.Triangle(i).Get()
+            p,q,r=[mesh.Node(j) for j in (a,b,c)]
+            area+=gp_Vec(p,q).Crossed(gp_Vec(p,r)).Magnitude()/2
+            uv=[mesh.UVNode(j) for j in (a,b,c)]
+            assert (uv[1].X()-uv[0].X())*(uv[2].Y()-uv[0].Y())-(uv[1].Y()-uv[0].Y())*(uv[2].X()-uv[0].X())>=0
+        assert abs(area/(.002*.6*.001)-1)<.002
     # Force only the first copied-face mesher attempt to fail, so the bounded
     # planar reconstruction branch is exercised without private CAD fixtures.
     from unittest.mock import patch

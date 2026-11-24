@@ -50,6 +50,30 @@ def export_model(path, target):
         raise RuntimeError('Exporter did not produce a nonempty model')
 
 
+def complete_cad_material_slots():
+    """Make CAD's unspecified/default face material explicit for exporters."""
+    import bpy
+    default = None
+    fixed = 0
+    for mesh in bpy.data.meshes:
+        used = {polygon.material_index for polygon in mesh.polygons}
+        for index in sorted(used):
+            if index < len(mesh.materials) and mesh.materials[index] is not None:
+                continue
+            if default is None:
+                default = bpy.data.materials.new('STEP Default')
+                default.diffuse_color = (.8, .8, .8, 1.)
+                default.use_nodes = True
+                node = next(n for n in default.node_tree.nodes if n.type == 'BSDF_PRINCIPLED')
+                node.inputs['Base Color'].default_value = (.8, .8, .8, 1.)
+                node.inputs['Roughness'].default_value = .5
+            while len(mesh.materials) <= index:
+                mesh.materials.append(default)
+            mesh.materials[index] = default
+            fixed += 1
+    return fixed
+
+
 def main(job_path):
     import bpy
     job = json.loads(job_path.read_text(encoding='utf-8'))
@@ -70,7 +94,8 @@ def main(job_path):
         if missing:
             raise RuntimeError(missing)
         progress('正在检查源文件与缓存…')
-        key = core.fingerprint(source, target, bpy.app.version_string)
+        options = {'keyshot_model_set': job.get('keyshot_model_set', '')} if backend == 'keyshot' else None
+        key = core.fingerprint(source, target, bpy.app.version_string, options)
         cache = Path(job['cache']).resolve()
         # Cache must not be under the model asset tree (it invalidates itself).
         if source.parent == cache or source.parent in cache.parents:
@@ -97,16 +122,26 @@ def main(job_path):
             warnings.extend(three_ds.load(source))
         elif backend == 'native':
             import_model(source)
+        elif backend == 'keyshot':
+            import keyshot
+            warnings.extend(keyshot.load(source, job.get('keyshot_model_set', '')))
         elif backend == 'cad':
             intermediate = work / 'bridge.glb'
             command = [core.engines()['cad'], '-B', '-X', 'utf8', str(ROOT / 'cad_worker.py'), str(source), str(intermediate)]
             core.run_external(command, job['timeout'], job_path.parent / 'engine.log', cwd=str(source.parent))
             import_model(intermediate)
+            default_materials = complete_cad_material_slots()
+            if default_materials:
+                warnings.append('STEP 未指定材质的 %d 个材质槽使用默认中性材质，已有颜色保留。' % default_materials)
             cad_lines = (job_path.parent / 'engine.log').read_text(encoding='utf-8', errors='replace').splitlines()
             cad_report = next((json.loads(line) for line in reversed(cad_lines) if line.startswith('{') and 'repaired_faces' in line), {})
-            recovered = sum(cad_report.get('repaired_faces', {}).values())
+            repairs = cad_report.get('repaired_faces', {})
+            degenerate = repairs.get('degenerate-edge', 0)
+            recovered = sum(repairs.values()) - degenerate
             if recovered:
-                warnings.append('STEP 已对 %d 个异常面重新网格化；平面边界修复受误差和面积检查约束，未修改源文件。' % recovered)
+                warnings.append('STEP 已对 %d 个异常面重新网格化；边界与曲面修复受误差和面积检查约束，未修改源文件。' % recovered)
+            if degenerate:
+                warnings.append('STEP 有 %d 个退化面：面积小于 1e-10 平方毫米、两侧边界重合误差不超过 1e-7 毫米，仅保留其所属零件的有效曲面。' % degenerate)
             warnings.append('STEP 使用独立 Open CASCADE 内核转换曲面与装配；输出为网格，不保留 CAD 参数历史。')
         elif backend == 'max':
             from vendor import import_max

@@ -76,5 +76,23 @@
   ],
   "engine_sha256": "d59ce27b0e2a3dfeed1f851305c4b1f9209026fb27d671218eaef4bf0d5f87a0",
   "max_reader_sha256": "1b786ebe82d2a1c0df273514af449e8b91430672abafde3de4ee634f2432320d",
-  "cad_runtime_sha256": "cd9630a45bb2a4c81a7ec8041f4cbfdda75d86dd8d34ff0846a268a636bb0a3c"
+  "cad_runtime_sha256": "cd9630a45bb2a4c81a7ec8041f4cbfdda75d86dd8d34ff0846a268a636bb0a3c",
+  "keyshot": {
+    "status": "experimental",
+    "dal_versions": [
+      "024"
+    ],
+    "source_extensions": [
+      ".bip",
+      ".ksp"
+    ],
+    "saved_triangle_meshes_only": true,
+    "ksp": "one BIP in an unencrypted ZIP; synthetic container tests only",
+    "complete_visibility": false,
+    "textures": false,
+    "all_versions": false,
+    "max_source_bytes": 536870912,
+    "max_unpacked_bytes": 536870912
+  },
+  "keyshot_reader_sha256": "0dc3d1c9a4fe8d215beff6247402c69bec3cd92778146e777ca68999858c99d8"
 }
